@@ -1,0 +1,42 @@
+--------- MyISP --------
+Ya configurado
+
+-------- RFrontera -------
+enable
+config t
+
+hostname RFrontera
+
+service password-enc
+no ip domain lookup
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+enable password class
+
+-------- RA ----------
+enable
+config t
+
+hostname RA
+
+service password-enc
+no ip domain lookup
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+enable password class

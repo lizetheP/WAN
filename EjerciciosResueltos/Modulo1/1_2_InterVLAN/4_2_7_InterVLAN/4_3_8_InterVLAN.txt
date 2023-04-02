@@ -1,0 +1,179 @@
+------------------------------
+Switch Multicapa (MLS) Capa 3
+------------------------------
+
+config t
+
+int g0/2
+no switchport
+ip address 209.165.200.225 255.255.255.252
+
+vlan 10
+name Staff
+
+vlan 20
+name Student
+
+vlan 30
+name Faculty
+--------------------------------------------------
+# Ya está configurada la vlan de administración-
+#vlan 99
+#name Management
+--------------------------------------------------
+int vlan 10
+ip address 192.168.10.254 255.255.255.0
+
+int vlan 20
+ip address 192.168.20.254 255.255.255.0
+
+int vlan 30
+ip address 192.168.30.254 255.255.255.0
+
+int vlan 99
+ip address 192.168.99.254 255.255.255.0
+
+int g0/1
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk encapsulation dot1q
+
+# Activar el routing
+
+ip routing
+
+--------------
+S1
+--------------
+config t
+
+int g0/1
+switchport mode trunk
+switchport trunk native vlan 99
+
+------------------------------------------
+# En el s1 ya está configurada la vlan 99
+int vlan 99
+ip address 192.168.99.1 255.255.255.0
+
+ip default-gateway 192.168.99.254
+
+# En el s1 ya están configuradas todas las vlans
+
+vlan 10
+name Staff
+
+vlan 20
+name Student
+
+vlan 30
+name Faculty
+
+vlan 99
+name Management
+
+# En el s1 ya están asignados los puertos a las vlans
+
+S2
+--------------
+config t
+
+# En el s2 ya está configurada la vlan 99
+int vlan 99
+ip address 192.168.99.2 255.255.255.0
+
+ip default-gateway 192.168.99.254
+
+# En el s2 ya están configuradas todas las vlans
+vlan 10
+name Staff
+
+vlan 20
+name Student
+
+vlan 30
+name Faculty
+
+vlan 99
+name Management
+
+# En el s2 ya están asignados los puertos a las vlans
+
+int range fa0/2-8
+switchport mode access
+switchport access vlan 10
+
+int range fa0/9-16
+switchport mode access
+switchport access vlan 20
+
+int range fa0/17-24
+switchport mode access
+switchport access vlan 30
+
+--------------
+S3
+--------------
+config t
+
+---------------------------------------------------------
+# En el s3 ya está configurada la vlan 99
+int vlan 99
+ip address 192.168.99.3 255.255.255.0
+
+ip default-gateway 192.168.99.254
+
+# En el s3 ya están configuradas todas las vlans
+vlan 10
+name Staff
+
+vlan 20
+name Student
+
+vlan 30
+name Faculty
+
+vlan 99
+name Management
+
+# En el s3 ya están asignados los puertos a las vlans
+
+int range fa0/2-8
+switchport mode access
+switchport access vlan 10
+
+int range fa0/9-16
+switchport mode access
+switchport access vlan 20
+
+int range fa0/17-24
+switchport mode access
+switchport access vlan 30
+
+----------------------------------------------------------
+
+IPV6
+----------------------------------------------------------
+----------------------------------------------------------
+
+Switch MLS
+-------------------
+config t
+# Habilitar enrutamiento IPv6
+ipv6 unicast-routing
+
+int vlan 10
+ipv6 address 2001:db8:acad:10::1/64
+
+int vlan 20
+ipv6 address 2001:db8:acad:20::1/64
+
+int vlan 30
+ipv6 address 2001:db8:acad:30::1/64
+
+#Configurar g0/2
+int g0/2
+ipv6 address 2001:db8:acad:a::1/64
+
+# LAS PCs ya están configuradas con IPv4 e IPv6
+

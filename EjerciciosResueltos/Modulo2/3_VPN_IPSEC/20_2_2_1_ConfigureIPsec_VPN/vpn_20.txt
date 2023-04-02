@@ -1,0 +1,212 @@
+--------------------------------------------------
+Router R1
+--------------------------------------------------
+en
+config t
+
+hostname R1
+
+enable secret ciscoenpa55
+
+username SSHadmin privilege 15 secret 5 ciscosshpa55
+
+ip ssh version 2
+ip domain-name ccnasecurity.com
+
+interface G0/1
+ip address 192.168.1.1 255.255.255.0
+no shut
+
+interface S0/0/0
+ip address 10.1.1.2 255.255.255.252
+clock rate 128000
+no shut
+
+router ospf 101
+network 10.1.1.0 0.0.0.3 area 0
+network 192.168.1.0 0.0.0.255 area 0
+
+banner motd #
+************ AUTHORIZED ACCESS ONLY *************
+UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED.#
+
+
+logging trap debugging
+line con 0
+password ciscoconpa55
+login
+
+line vty 0 4
+login local
+transport input ssh
+
+!Enable the Security Technology package
+--------------------------------------------------------
+license boot module c1900 technology-package securityk9
+
+!Configure ACL 110 para identificar el tráfico de la 
+!LAN en R1 a la LAN en R3 como interesante. 
+!--------------------------------------------------------
+access-list 110 permit ip 192.168.1.0 0.0.0.255 192.168.3.0 0.0.0.255
+
+!Configure the IKE Phase 1 ISAKMP policy on R1.
+!Configure the crypto ISAKMP policy 10 properties on R1 
+!along with the shared crypto key vpnpa55. 
+---------------------------------------------------------
+crypto isakmp policy 10
+encryption aes 256
+authentication pre-share
+group 5
+exit
+crypto isakmp key vpnpa55 address 10.2.2.2
+
+!Configure the IKE Phase 2 IPsec policy on R1.
+-----------------------------------------------------------
+! a.Create the transform-set VPN-SET to use esp-aes and esp-sha-hmac.
+crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+
+! b.	Create the crypto map VPN-MAP that binds all of the Phase 2 parameters together. Use sequence number 10 and identify it as an ipsec-isakmp map.
+crypto map VPN-MAP 10 ipsec-isakmp
+description VPN connection to R3
+set peer 10.2.2.2
+set transform-set VPN-SET
+match address 110
+exit
+
+Configure the crypto map on the outgoing interface.
+-------------------------------------------------------------
+!Bind the VPN-MAP crypto map to the outgoing Serial 0/0/0 interface.
+
+interface s0/0/0
+crypto map VPN-MAP
+
+--------------------------------------------------
+Router R2
+--------------------------------------------------
+en
+config t
+
+hostname R2
+
+enable secret ciscoenpa55
+
+username SSHadmin privilege 15 secret 5 ciscosshpa55
+
+ip ssh version 2
+ip domain-name ccnasecurity.com
+
+interface G0/0
+ip address 192.168.2.1 255.255.255.0
+no shut
+
+interface S0/0/0
+ip address 10.1.1.1 255.255.255.252
+no shut
+
+interface S0/0/1
+ip address 10.2.2.1 255.255.255.252
+clock rate 128000
+no shut
+
+router ospf 101
+network 10.1.1.0 0.0.0.3 area 0
+network 10.2.2.0 0.0.0.3 area 0
+network 192.168.2.0 0.0.0.255 area 0
+
+banner motd #
+************ AUTHORIZED ACCESS ONLY *************
+UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED.#
+
+line con 0
+password ciscoconpa55
+login
+
+line vty 0 4
+login local
+transport input ssh
+
+end
+
+
+
+--------------------------------------------------
+Router R3
+--------------------------------------------------
+en
+config t
+
+hostname R3
+
+enable secret ciscoenpa55
+
+username SSHadmin privilege 15 secret 5 ciscosshpa55
+
+ip ssh version 2
+ip domain-name ccnasecurity.com
+
+interface G0/1
+ip address 192.168.3.1 255.255.255.0
+no shut
+
+interface Serial0/0/1
+ip address 10.2.2.2 255.255.255.252
+no shut
+
+router ospf 101
+network 10.2.2.0 0.0.0.3 area 0
+network 192.168.3.0 0.0.0.255 area 0
+
+banner motd #
+************ AUTHORIZED ACCESS ONLY *************
+UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED.#
+
+line con 0
+password ciscoconpa55
+login
+
+line vty 0 4
+login local
+transport input ssh
+
+end
+
+!Enable the Security Technology package
+--------------------------------------------------------
+license boot module c1900 technology-package securityk9
+
+!Configure ACL 110 para identificar el tráfico de la 
+!LAN en R1 a la LAN en R3 como interesante. 
+!--------------------------------------------------------
+access-list 110 permit ip 192.168.3.0 0.0.0.255 192.168.1.0 0.0.0.255
+
+!Configure the IKE Phase 1 ISAKMP policy on R3.
+!Configure the crypto ISAKMP policy 10 properties on R3 
+!along with the shared crypto key vpnpa55. 
+---------------------------------------------------------
+crypto isakmp policy 10
+encryption aes 256
+authentication pre-share
+group 5
+exit
+crypto isakmp key vpnpa55 address 10.1.1.2
+
+!Configure the IKE Phase 2 IPsec policy on R3.
+-----------------------------------------------------------
+! a.Create the transform-set VPN-SET to use esp-aes and esp-sha-hmac.
+crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+
+! b.	Create the crypto map VPN-MAP that binds all of the Phase 2 parameters together. Use sequence number 10 and identify it as an ipsec-isakmp map.
+
+crypto map VPN-MAP 10 ipsec-isakmp
+description VPN connection to R1
+set peer 10.1.1.2
+set transform-set VPN-SET
+match address 110
+exit
+
+Configure the crypto map on the outgoing interface.
+-------------------------------------------------------------
+!Bind the VPN-MAP crypto map to the outgoing Serial 0/0/0 interface.
+
+interface s0/0/1
+crypto map VPN-MAP

@@ -1,0 +1,132 @@
+SWA
+-------------------------
+config t
+vlan 10
+name admin
+
+vlan 20
+name Accounts
+
+vlan 30
+name HR
+
+vlan 40
+name voice
+
+vlan 99
+Management
+
+vlan 100
+Native
+
+interface g0/1
+switchport mode trunk
+
+interface g0/2
+switchport mode trunk
+
+int vlan 99
+ip address 192.168.99.252 255.255.255.0
+no shut
+
+
+SWB
+-------------------------
+
+config t
+vlan 10
+name admin
+
+vlan 20
+name Accounts
+
+vlan 30
+name HR
+
+vlan 40
+name voice
+
+vlan 99
+Management
+
+vlan 100
+Native
+
+interface f0/1
+switchport mode access
+switchport access vlan 10
+
+interface f0/2
+switchport mode access
+switchport access vlan 20
+
+interface f0/3
+switchport mode access
+switchport access vlan 30
+
+interface g0/1
+switchport mode trunk
+
+int vlan 99
+ip address 192.168.99.253 255.255.255.0
+no shut
+
+SWC
+-------------------------
+
+config t
+vlan 10
+name admin
+
+vlan 20
+name Accounts
+
+vlan 30
+name HR
+
+vlan 40
+name voice
+
+vlan 99
+Management
+
+vlan 100
+Native
+
+interface f0/1
+switchport mode access
+switchport access vlan 10
+
+interface f0/2
+switchport mode access
+switchport access vlan 20
+
+interface f0/3
+switchport mode access
+switchport access vlan 30
+
+interface f0/1
+switchport mode access
+switchport access vlan 10
+
+interface f0/2
+switchport mode access
+switchport access vlan 20
+
+interface f0/4
+switchport mode access
+switchport access vlan 10
+
+mls qos trust cos
+switchport voice vlan 150
+
+interface g0/2
+switchport mode trunk
+
+int vlan 99
+ip address 192.168.99.254 255.255.255.0
+no shut
+
+
+
+

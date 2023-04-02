@@ -1,0 +1,216 @@
+ROUTER INGENIERIA
+--------------------------------------------------
+en
+config t
+
+hostname INGENIERIA
+
+int g0/1
+ip address 192.168.20.1 255.255.255.128
+no shut
+
+int s0/0/1
+ip address 10.1.1.1 255.255.255.252
+no shut
+
+router eigrp 2023
+network 192.168.20.0 0.0.0.127
+network 10.1.1.0 0.0.0.3
+passive-interface g0/1
+
+CONFIGURACIÓN DE QoS
+--------------------------------------------
+class-map match-any CRITICOS
+match protocol eigrp
+exit
+
+class-map match-any MEDIOS
+match protocol telnet
+match protocol ftp
+match protocol ssh
+exit
+
+class-map match-any BAJOS
+match protocol http
+match protocol smtp
+match protocol pop3
+match protocol dns
+exit
+
+policy-map POLITICAS
+class CRITICOS
+set precedence 7
+exit
+
+class MEDIOS
+set precedence 5
+exit
+
+class BAJOS
+set precedence 3
+exit
+
+int s0/0/1
+service-policy output POLITICAS
+
+enable secret class
+
+line vty 0 4
+password cisco
+login
+
+--------------------------------------------------
+ROUTER LICENCIATURA
+--------------------------------------------------
+en
+config t
+
+hostname LICENCIATURA
+
+int g0/1
+ip address 192.168.10.1 255.255.255.128
+no shut
+
+int s0/0/0
+ip address 10.2.2.1 255.255.255.252
+no shut
+
+router eigrp 2023
+network 192.168.10.0 0.0.0.127
+network 10.2.2.0 0.0.0.3
+passive-interface g0/1
+
+
+CONFIGURACIÓN DE QoS
+--------------------------------------------
+class-map match-any CRITICOS
+match protocol eigrp
+exit
+
+class-map match-any MEDIOS
+match protocol telnet
+match protocol ftp
+match protocol ssh
+exit
+
+class-map match-any BAJOS
+match protocol http
+match protocol smtp
+match protocol pop3
+match protocol dns
+exit
+
+policy-map POLITICAS
+class CRITICOS
+set precedence 7
+exit
+
+class MEDIOS
+set precedence 5
+exit
+
+class BAJOS
+set precedence 3
+exit
+
+int s0/0/0
+service-policy output POLITICAS
+
+https://www.youtube.com/watch?v=M4HM7od5JWA
+
+--------------------------------------------------
+ROUTER CENTRAL
+--------------------------------------------------
+en
+config t
+
+hostname RCENTRAL
+
+int g0/1
+ip address 192.168.30.1 255.255.255.240
+no shut
+
+int g0/0
+ip address 192.168.40.1 255.255.255.224
+no shut
+
+int s0/0/0
+ip address 10.2.2.2 255.255.255.252
+clock rate 128000
+no shut
+
+int s0/0/1
+ip address 10.1.1.2 255.255.255.252
+clock rate 128000
+no shut
+
+router eigrp 2023
+network 10.1.1.0 0.0.0.3
+network 10.2.2.0 0.0.0.3
+network 192.168.40.0 0.0.0.31
+network 192.168.30.0 0.0.0.15
+passive-interface g0/1
+passive-interface g0/0
+no auto-summary
+
+----------------------------------
+QoS
+
+class-map match-any CRITICOS
+match protocol eigrp
+exit
+
+class-map match-any MEDIOS
+match protocol telnet
+match protocol ftp
+match protocol ssh
+exit
+
+class-map match-any BAJOS
+match protocol http
+match protocol smtp
+match protocol pop3
+match protocol dns
+exit
+
+policy-map POLITICAS
+class CRITICOS
+set precedence 7
+exit
+
+class MEDIOS
+set precedence 5
+exit
+
+class BAJOS
+set precedence 3
+exit
+
+! En este caso ya está configurado QoS, ahora vamos a aplicar
+! QoS a las interfaces de los routers.
+! En el router central, se va aplicar QoS a las 
+! interfaces de entrada g0/0 y g0/1
+! por que son las entradas de los servidores.
+
+int g0/0
+service-policy input POLITICAS
+
+int g0/1
+service-policy input POLITICAS
+
+! PARA EL ROUTER CENTRAL VAMOS A CONFIGURAR LAS SERIALES
+! COMO INTERFACES DE SALIDA
+
+int s0/0/0
+service-policy output POLITICAS
+
+int s0/0/1
+service-policy output POLITICAS
+
+! PARA LOS OTROS ROUTERS VAMOS A CONFIGURAR LAS INTERFACES DE SALIDA
+
+! --------------------------------------------------------
+! CONFIGURACIÓN DE SERVIDORES
+! --------------------------------------------------------
+! SERVIDOR DNS
+! Se deshabilitan todos los servicios

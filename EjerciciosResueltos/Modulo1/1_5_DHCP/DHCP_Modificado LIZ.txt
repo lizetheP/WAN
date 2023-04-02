@@ -1,0 +1,62 @@
+R2
+---------------------------------------------------
+enable
+config t
+ip dhcp excluded-address 192.168.10.1 192.168.10.10
+ip dhcp excluded-address 192.168.30.1 192.168.30.10
+
+ip dhcp pool R1-LAN
+network 192.168.10.0 255.255.255.0
+default-router 192.168.10.1
+dns-server 192.168.20.254
+
+ip dhcp pool R3-LAN
+network 192.168.30.0 255.255.255.0
+default-router 192.168.30.1
+dns-server 192.168.20.254
+
+! CONFIGURAR LA INTERFAZ G0/1 EN EL R2 PARA QUE 
+! RECIBA DIRECCIONAMIENTO IP DE DHCP y active interfaz
+int g0/1
+ip address dhcp
+no shut
+
+R1
+----------------------------------------------------
+enable
+config t
+
+int g0/0
+ip helper-address 10.1.1.2
+
+R3
+----------------------------------------------------
+enable
+config t
+
+int g0/0
+ip helper-address 10.2.2.2
+
+ISP
+----------------------------------------------------
+enable
+config t
+
+int g0/1
+ip address 209.165.200.225 255.255.255.224
+no shut
+
+int g0/0
+ip address 209.165.202.129 255.255.255.224
+no shut
+
+ip dhcp excluded-address 209.165.200.225 
+ip dhcp excluded-address 209.165.202.129 
+ip dhcp excluded-address 209.165.202.158 
+
+ip dhcp pool ISP_R1
+network 209.165.200.224 255.255.255.224
+default-router 209.165.200.225
+dns-server 192.168.20.254
+
+ip route 0.0.0.0 0.0.0.0 g0/1 

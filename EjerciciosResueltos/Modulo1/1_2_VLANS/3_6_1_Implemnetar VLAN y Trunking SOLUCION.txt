@@ -1,0 +1,150 @@
+SWA
+-------------------------
+config t
+vlan 10
+name admin
+
+vlan 20
+name Accounts
+
+vlan 30
+name HR
+
+vlan 40
+name voice
+
+vlan 99
+name Management
+
+vlan 100
+name Native
+
+interface g0/1
+switchport mode trunk
+switchport trunk native vlan 100
+switchport nonegotiate
+#Troncal estática
+#Deshabilite el enlace dinámico en este puerto
+#Desactive DTP
+
+interface g0/2
+switchport mode trunk
+switchport trunk native vlan 100
+switchport mode dynamic desirable
+
+# Configure G0/2 en SWA para que 
+# negocie correctamente el enlace troncal con SWC
+
+int vlan1
+no ip address
+shut
+
+int vlan 99
+ip address 192.168.99.252 255.255.255.0
+no shut
+
+SWB
+-------------------------
+
+config t
+vlan 10
+name admin
+
+vlan 20
+name Accounts
+
+vlan 30
+name HR
+
+vlan 40
+name voice
+
+vlan 99
+name Management
+
+vlan 100
+name Native
+
+interface f0/1
+switchport mode access
+switchport access vlan 10
+
+interface f0/2
+switchport mode access
+switchport access vlan 20
+
+interface f0/3
+switchport mode access
+switchport access vlan 30
+
+interface g0/1
+switchport mode trunk
+switchport trunk native vlan 100
+switchport nonegotiate
+#Desactive DTP
+
+int vlan 99
+ip address 192.168.99.253 255.255.255.0
+no shut
+
+SWC
+-------------------------
+
+config t
+vlan 10
+name admin
+
+vlan 20
+name Accounts
+
+vlan 30
+name HR
+
+vlan 40
+name voice
+
+vlan 99
+name Management
+
+vlan 100
+name Native
+
+interface f0/1
+switchport mode access
+switchport access vlan 10
+
+interface f0/2
+switchport mode access
+switchport access vlan 20
+
+interface f0/3
+switchport mode access
+switchport access vlan 30
+
+interface f0/4
+switchport mode access
+switchport access vlan 10
+
+mls qos trust cos
+switchport voice vlan 40
+
+interface g0/2
+switchport mode trunk
+switchport trunk native vlan 100
+
+#SWC está configurado en el modo DTP predeterminado 
+# dynamic auto / DTP predeterminado
+# Hace que la interfaz pueda convertir el enlace
+# en un enlace troncal. La interfaz se convierte en 
+# una interfaz de enlace troncal, si la interfaz vecina 
+# está configurado en modo trunk o desirable.
+# El modo de puerto de switch predeterminado 
+# para todas las interfaces Ethernet es dynamic auto.
+
+int vlan 99
+ip address 192.168.99.254 255.255.255.0
+no shut
+
+
+
+

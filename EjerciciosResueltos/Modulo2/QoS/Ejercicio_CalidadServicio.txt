@@ -1,0 +1,300 @@
+---------------------------------------
+Router 1
+---------------------------------------
+en
+config t
+
+hostname R1
+
+int fa 0/0
+ip address 10.1.1.1 255.255.255.0
+no shut
+
+int fa 0/1
+ip address 10.2.2.1 255.255.255.0
+no shut
+
+router ospf 1
+network 0.0.0.0 255.255.255.255 area 0
+-------------------------------------
+class-map match-all INTERESANTE
+match access-group 1
+
+access-list 1 permit host 10.1.1.100
+
+policy-map DEMO
+class INTERESANTE
+set precedence 5
+
+int fa0/0
+service-policy input DEMO
+
+-------------------------------------
+class-map match-all PRIORIDAD5
+match precedence 5
+exit
+
+policy-map PRIORIDADES
+class PRIORIDAD5
+priority 1000
+exit
+
+int f0/1
+service-policy output PRIORIDADES
+
+-------------------------------------
+
+!The "network 0.0.0.0 255.255.255.255" command
+!0.0.0.0: It is the defined network
+!255.255.255.255: 
+!It means that the bits of the network 0.0.0.0 can vary 
+!without restriction, in other words, 
+!it will permit the matching with all networks,
+------------------------------------------------------------
+! PASO 1. QoS Clasificación y marcado
+! tráfico interesante
+class-map INTERESANTE
+! en esta sección vamos a tener un comando match (match ?)
+  match access-group 1
+! para buscar alguna característica, por ejemplo, 
+! si el paquete cumple con una lista de acceso.
+! Vamos a buscar si el paquete encaja con la lista 1 y
+! si encaja le vamos a llamar interesante
+! Vamos a dar de alta la lista 1
+access-list 1 permit host 10.1.1.100
+
+! El trafico del host 10.1.1.100
+! Permite que este paquete sea clasificado dentro de la
+! categoría INTERESANTE, solamente es una etiqueta
+
+! Ahora vamos a definir que queremos hacer con esa categoría
+! de tráfico
+! El comando policy-map me permite definir las acciones que 
+! quiero tomar sobre el tráfico que estoy clasificando
+policy-map DEMO 
+class INTERESANTE 
+! policy map asume que ya se definieron varios comandos
+! class-map para dar de alta todas mis categorías de tráfico.
+! Ahorita solamente tengo la categoría de tráfico: INTERESANTE
+! Para la clase INTERESANTE puedo poner el comando 
+! * bandwidth
+! para reservar una cantidad de ancho de banda o un porcentaje
+! de ancho de banda del enlace.
+! * priority para darle prioridad absoluta a esta clase
+! * queue-limit tamaño máximo de la cola.
+! * random-detect 
+! * service-policy para concatenar políticas
+! * set para establecer valores de QoS para esta clase
+! * shape para moldeo de tráfico
+
+
+---------------------------------------------------------------
+?
+  bandwidth       Bandwidth
+  exit            Exit from class action configuration mode
+  no              Negate or set default values of a command
+  priority        Strict Scheduling Priority for this Class
+  queue-limit     Queue Max Threshold for Tail Drop
+  random-detect   Enable Random Early Detection as drop policy
+  service-policy  Configure Flow Next
+  set             Set QoS values
+  shape           Traffic Shaping
+----------------------------------------------------------------
+set ? podemos cambiar el valor de los tres bits de precedence
+set precedence puede tomar valores del 0 al 7.
+set precedence ?
+  <0-7>           Enter up to 4 precedence values separated by white-spaces
+  critical        Match packets with critical precedence (5)
+  flash           Match packets with flash precedence (3)
+  flash-override  Match packets with flash override precedence (4)
+  immediate       Match packets with immediate precedence (2)
+  internet        Match packets with internetwork control precedence (6)
+  network         Match packets with network control precedence (7)
+  priority        Match packets with priority precedence (1)
+  routine         Match packets with routine precedence (0)
+! Le pondremos set precedence critical (5), se puede poner el 
+! nombre o el número.
+
+! RESUMEN 
+! El paquete se va a clasificar como INTERESANTE
+! si encaja con la lista de acceso 1
+! class-map ?
+  WORD       class-map name
+  match-all  Logical-AND all matching statements under this classmap
+  match-any  Logical-OR all matching statements under this classmap
+  type       type of the class-map
+class-map match-all INTERESANTE
+! match-all se puso por default, pudiera ver puesto match any
+! match-all y match-any tiene sentido cuando tenemos varios comandos 
+! match
+! match-all se tienen que cumplir todos los comandos match, es un 
+! y lógico (and).
+! match-any si se cumple un comando match u otro, es un 
+! o lógico (or) entonces el tráfico será clasificado.
+! match all se deben cumplir todos los comandos match que haya 
+! definido, en este caso solo se puso uno.
+
+! Si el tráfico es interesante dale preferencia 5.
+policy-map DEMO
+class INTERESANTE
+set precedence 5
+
+! Vamos a habilitar esta política en la interface f0/0
+! con el comando service-policy y el nombre del policy-map
+! que es nombrado DEMO
+int fa0/0
+service-policy input DEMO
+
+! Listo, ya estoy clasificando y etiquetando el tráfico.
+! Vamos a verificar o combrobar que el tráfico de la compu .100 
+! es etiquetado
+! y el de la compu .103 no.
+
+------------------------------------------------------------
+! PASO 2. QoS Encolamiento y priorización de tráfico
+
+---------------------------------------
+Router 2
+---------------------------------------
+en
+config t
+
+hostname R2
+
+int fa 0/0
+ip address 10.2.2.2 255.255.255.0
+no shut
+
+int fa 0/1
+ip address 10.3.3.1 255.255.255.0
+no shut
+
+router ospf 1
+network 0.0.0.0 255.255.255.255 area 0
+# TODAS LAS INTERFACES DEL ÁREA 0
+
+-------------------------------------
+class-map match-all PRIORIDAD5
+match precedence 5
+exit
+
+policy-map PRIORIDADES
+class PRIORIDAD5
+priority 1000
+exit
+
+int f0/1
+service-policy output PRIORIDADES
+
+-------------------------------------
+-------------------------------------------------------------
+!Para configurar calidad del servicio CISCO,
+!cisco inventó un lenguaje MQC : Modular QoS CLI
+!MQC nos permite configurar lo que queremos en tres fases:
+! 1. Vamos a utilizar commandos class-map
+! para configurar los tipos de tráfico que vamos a querer
+class-map ...
+
+! 2. Vamos a utilizar comandos policy map
+! para configurar las acciones que vamos a tomar para esos
+! tipos de tráfico.
+! Dentro de policy map vamos a tener muchos comandos class
+policy-map ....
+  class ....
+  class ....
+  class class-default (clase especial)
+
+! 3. Una vez configuradas las acciones que vamos a tomar
+! vamos a entrar a una interfaz
+interface f0/1
+   service-policy [nombre del policy map] dirección de entrada
+   o salida en que queremos aplicar este policy map
+
+!service-policy output PRIORIDADES
+
+
+# Activar la politica DEMO en la interface de entrada
+service-policy input DEMO
+no shut
+
+line con 0
+exec-timeout 0 0
+exit
+
+router ospf 1
+network 0.0.0.0 255.255.255.255
+
+class-map INTERESANTE
+match access-group 1
+exit
+# Vamos a buscar si el paquete encaja con la lista 1
+do sh run
+
+access-list 1 permit host 10.1.1.100
+# Permite pasar a los paquetes de la compu .100
+# Permite que este paquete sea clasificado dentro de 
+# la categoría interesante. 
+
+pollicy-map DEMO 
+#dEFINIR LAS acciones a tomar sobre el tráfico que estoy 
+#filtrando. Para la clase interesante puedo poner el comando
+#bandwidth. priority para darle prioridad. shape moldeo trafico
+set precedence 5 # critical
+exit
+
+
+# Academia de policia, se trata de decir que hacer
+# agarrelo a los macanasos o sácalo corriendo.
+
+VAMOS A CONFIGURAR OTRO CLASS MAP
+# Si te llega tráfico con prioridad 5, mandalo con
+# prioridad absoluta.
+
+class-map PRIORIDAD5
+match precedence 5
+exit
+
+#Sugerencia
+#Siempre que pongamos un nombre en mayúsculas y español
+policy-map PRIORIDADES
+class PRIORIDADES
+#sI TE ENCUENTRAS prioridad 5, pon priority absoluta y vamos a apartar 
+# 1000 megabits por segundo, asignamos una cuota.
+
+priority 1000
+exit
+class class-default
+# Todo el tráfico que no aplique en la clausula anterior
+fair-queue 
+# Se divide el ancho de banda (equitativamente)
+igual en el resto de los usuarios.
+
+
+Router 2
+_________________________________________
+
+line con 0
+exec-timeout 0 0
+exit
+
+class-map match-all PRIORIDADES
+match precedence 5
+
+policy-map PRIORIDADES
+class PRIORIDADES
+priority 1000
+class class-default
+fair-queue
+exit
+
+int fa 0/0
+ip address 10.2.2.2 255.255.255.0
+no shut
+
+int fa 0/1
+ip address 10.3.3.1 255.255.255.0
+service-policy out PRIORIDADES
+no shut
+
+
+

@@ -1,0 +1,38 @@
+ISP
+-----------------------------------
+en
+config t
+
+int g0/0
+ip address 64.100.8.1 255.255.255.0
+no shut
+
+int g0/1
+ip address 64.104.223.1 255.255.255.252
+no shut
+
+int s0/0/0
+ip address 64.100.100.2 255.255.255.252
+encapsulation ppp
+ppp authentication pap
+ppp pap sent-username Tier3a password 0 cisco
+clock rate 4000000
+no shut
+
+int s0/0/1
+ip address 64.100.150.2 255.255.255.252
+encapsulation ppp
+ppp authentication chap
+clock rate 4000000
+no shut
+
+router eigrp 1
+ redistribute static 
+ passive-interface GigabitEthernet0/1
+ network 64.100.100.0 0.0.0.3
+ network 64.100.150.0 0.0.0.3
+ network 64.104.223.0 0.0.0.3
+ network 64.100.8.0 0.0.0.255
+
+ip route 0.0.0.0 0.0.0.0 64.100.100.1 
+ip route 0.0.0.0 0.0.0.0 64.100.150.1 

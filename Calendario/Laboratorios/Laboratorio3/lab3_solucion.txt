@@ -14,12 +14,12 @@ enable secret class
 
 banner motd #Unauthorized access is strictly prohibited#
 
-int g0/0
+int g0/0/0
 ip address 192.168.0.1 255.255.255.0
 no shut
 exit
 
-int g0/1
+int g0/0/1
 ip address 192.168.1.1 255.255.255.0
 no shut
 exit
@@ -44,12 +44,17 @@ router ospf 1
 network 192.168.0.0 0.0.0.255 area 0
 network 192.168.1.0 0.0.0.255 area 0
 network 192.168.2.252 0.0.0.3 area 0
+passive-interface g0/0/0
+passive-interface g0/0/1
+exit
 
-int g0/0
+int g0/0/0
 ip helper-address 192.168.2.254
+exit
 
-int g0/1
+int g0/0/1
 ip helper-address 192.168.2.254
+exit
 
 end
 ---------------------------------------
@@ -104,12 +109,16 @@ ip dhcp pool R1G1
 network 192.168.1.0 255.255.255.0
 default-router 192.168.1.1
 dns-server 209.165.200.225
+domain-name ccna-lab.com
+!lease 2
 exit
 
 ip dhcp pool R1G0
 network 192.168.0.0 255.255.255.0
 default-router 192.168.0.1
 dns-server 209.165.200.225
+domain-name ccna-lab.com
+!lease 2
 exit
 
 end

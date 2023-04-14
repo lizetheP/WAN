@@ -1,4 +1,4 @@
-routers ALFA, BETA, DELTA, ZETA
+ routers ALFA, BETA, DELTA, ZETA
 --------------------------------
 !Configurados
 --------------------------------
@@ -137,63 +137,93 @@ no shut
 ---------------------------------------------
 SWITCH NU
 ---------------------------------------------
+
 en
 config t
+
+hostname NU
+
 vlan 100
+exit
 vlan 200
+exit
 
 int f0/4
 switchport mode access
 switchport access vlan 200
+exit
 
 int f0/3
 switchport mode access
 switchport access vlan 100
+exit
 
 int f0/1
 switchport mode trunk
+exit
 
 int f0/2
 switchport mode trunk
+exit
 
 ---------------------------------------------
 SWITCH OMEGA
 ---------------------------------------------
 en
 config t
+
+hostname OMEGA
+
 vlan 100
+exit
+
 vlan 200
+exit
 
 int f0/4
 switchport mode access
 switchport access vlan 200
+exit
 
 int f0/3
 switchport mode access
 switchport access vlan 100
+exit
 
 int f0/1
 switchport mode trunk
+exit
 
 int f0/2
 switchport mode trunk
+exit
 
 ---------------------------------------------
 SWITCH FI
 ---------------------------------------------
 en
 config t
+
+hostname FI
+
 vlan 100
+exit
+
 vlan 200
+exit
 
 int f0/1
 switchport mode trunk
+exit
 
 int f0/2
 switchport mode trunk
+exit
 
 int f0/3
 switchport mode trunk
+exit
+
 ---------------------------------------------
 CONFIGURE SWITCH MULTICAPA
 ---------------------------------------------

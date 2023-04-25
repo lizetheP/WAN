@@ -1,0 +1,141 @@
+---------------------------------------------------------------
+Configuración del router R1
+---------------------------------------------------------------
+enable
+config t
+
+hostname R1
+
+service password-encryption
+
+enable secret class
+
+no ip domain-lookup
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging sync
+exit
+
+line vty 0 4
+password cisco
+login
+exit
+
+int Lo0
+ip add 192.168.20.1 255.255.255.0
+no shut
+exit
+
+int g0/1
+ip address 192.168.10.1 255.255.255.0
+no shut
+exit
+
+int s0/1/0
+ip address 10.1.1.1 255.255.255.252
+clock rate 128000
+no shut
+exit
+
+router ospf 1
+network 192.168.10.0 0.0.0.255 area 0
+network 192.168.20.0 0.0.0.255 area 0
+network 10.1.1.0 0.0.0.3 area 0
+exit
+
+
+---------------------------------------------------------------
+Configuración del router ISP
+---------------------------------------------------------------
+enable
+config t
+hostname ISP
+service password-encryption
+enable secret class
+no ip domain-lookup
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+int Lo0
+ip add 209.165.200.225 255.255.255.224
+no shut
+
+int Lo1
+ip add 209.165.201.1 255.255.255.224
+no shut
+
+int s0/1/0
+ip address 10.1.1.2 255.255.255.252
+no shut
+
+int s0/1/1
+ip address 10.2.2.2 255.255.255.252
+clock rate 128000
+no shut
+
+router ospf 2
+network 209.165.200.224 0.0.0.31 area 0
+network 209.165.201.0 0.0.0.31 area 0
+network 10.1.1.0 0.0.0.3 area 0
+network 10.2.2.0 0.0.0.3 area 0
+
+---------------------------------------------------------------
+Configuración del router R3
+---------------------------------------------------------------
+enable
+config t
+
+hostname R3
+
+service password-encryption
+
+enable secret class
+
+no ip domain-lookup
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging sync
+exit
+
+line vty 0 4
+password cisco
+login
+exit
+
+int g0/1
+ip address 192.168.30.1 255.255.255.0
+no shut
+exit
+
+int Lo0
+ip add 192.168.40.1 255.255.255.0
+no shut
+exit
+
+int s0/1/1
+ip address 10.2.2.1 255.255.255.252
+no shut
+exit
+
+router ospf 3
+network 192.168.30.0 0.0.0.255 area 0
+network 192.168.40.0 0.0.0.255 area 0
+network 10.2.2.0 0.0.0.3 area 0
+exit

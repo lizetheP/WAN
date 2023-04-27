@@ -1,0 +1,75 @@
+---------------------------------------------------------------
+Configuración del router Gateway
+---------------------------------------------------------------
+
+enable
+config t
+
+hostname Gateway
+
+service password-encryption
+
+enable secret class
+
+no ip domain-lookup
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging sync
+exit
+
+line vty 0 4
+password cisco
+login
+exit
+
+int g0/1
+ip address 192.168.1.1 255.255.255.0
+no shut
+exit
+
+int s0/1/1
+ip address 209.165.201.18 255.255.255.252
+no shut
+exit
+---------------------------------------------------------------
+Configuración del router ISP
+---------------------------------------------------------------
+
+enable
+config t
+
+hostname ISP
+
+service password-encryption
+
+enable secret class
+
+no ip domain-lookup
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging sync
+exit
+
+line vty 0 4
+password cisco
+login
+exit
+
+int Lo0
+ip address 192.31.7.1 255.255.255.255
+no shut
+exit
+
+int s0/1/0
+ip address 209.165.201.17 255.255.255.252
+clock rate 64000
+no shut
+exit

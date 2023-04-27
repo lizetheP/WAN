@@ -1,0 +1,11 @@
+! MAPAS DE CLASE
+!------------------------------
+class-map HTTPS_MAP
+match protocol https
+
+class-map HTTP_MAP
+match protocol http
+
+class-map ICMP_MAP
+match protocol icmp
+

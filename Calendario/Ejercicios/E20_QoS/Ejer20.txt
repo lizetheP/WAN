@@ -1,0 +1,52 @@
+---------------------------------------
+Router 1
+---------------------------------------
+en
+config t
+
+hostname R1
+
+interface FastEthernet0/0
+ip address 10.1.1.1 255.255.255.0
+no shut
+exit
+
+interface s0/0/0
+ip address 10.2.2.1 255.255.255.0
+clock rate 128000
+no shut
+exit
+
+router ospf 1
+network 10.1.1.0 0.0.0.255 area 0
+network 10.2.2.0 0.0.0.255 area 0
+exit
+
+access-list 1 permit host 10.1.1.100
+
+end
+
+---------------------------------------
+Router 2
+---------------------------------------
+en
+config t
+
+hostname R2
+
+interface FastEthernet0/0
+ip address 10.3.3.1 255.255.255.0
+no shut
+exit
+
+interface s0/0/0
+ip address 10.2.2.2 255.255.255.0
+no shut
+exit
+
+router ospf 1
+network 10.3.3.0 0.0.0.255 area 0
+network 10.2.2.0 0.0.0.255 area 0
+exit
+
+end

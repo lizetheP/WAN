@@ -136,7 +136,7 @@ exit
 
 end
 -------------------------------------------------
-Ruteador CENTRAL
+Ruteador LICENCIATURA
 -------------------------------------------------
 en
 config t

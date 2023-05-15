@@ -1,0 +1,58 @@
+Excelente trabajo estimado Cutberto!!
+Evaluación de competencias:
+
+STC0301. Configuración de infraestructura computacional
+SÓLIDO
+* Default-router incorrecto e IPs excluidas incorrectas
+* Faltó redistribuir la ruta por default.
+
+STC0302 Validación de la operación de la infraestructura computacional
+BÁSICO
+* No se pudo validar configuración, ya que no se configuró correctamente DHCP.
+
+STC0303. Integración de seguridad en proyectos computacionales
+SÓLIDO
+* Realizó correctamente dos listas de acceso de tres.
+
+Excelente trabajo estimado Cutberto!!, solamente tengo algunos comentarios:
+
+Evaluación de competencias:
+
+STC0301. Configuración de infraestructura computacional
+DESTACADO
+* Recuerda no se debe anunciar en OSPF la red que conecta con el ISP.
+* Faltó hacer pasivas las interfaces gigabit ethernet.
+
+STC0302 Validación de la operación de la infraestructura computacional
+DESTACADO
+* Todas las pruebas exitosas.
+
+STC0303. Integración de seguridad en proyectos computacionales
+DESTACADO
+* Realizó correctamente dos listas de acceso y la tercera solamente hubo un error por la IP del servidor incorrecta e interface incorrecta.
+
+Hola estimado David, creo que tenemos varias áreas de oportunidad en las competencias de configuración, validación y seguridad.
+
+Evaluación de competencias:
+
+STC0301. Configuración de infraestructura computacional
+"INCIPIENTE"
+
+* En el ruteador Rmedicos hizo pasiva la serial, no  hay comunicación con el ruteador Rhospital. 
+* Faltó hacer pasiva la interface G0/0. 
+* Faltó agregar una red en OSPF. 
+* En este ruteador no se tiene que redistribuir la ruta por default. 
+
+* En el ruteador RHospital hizo pasiva la serial que comunica con el ruteador RMedicos, por lo que no hay comunicación entre ruteadores. * Faltó hacer pasiva la interface g0/0 y la s0/0/0. 
+* No están agregadas todas la redes en OSPF, solo agrega una correcta.
+
+* No hay configuración de DHCP.
+* No hay configuración de NAT estático y dinámico.
+
+STC0302 Validación de la operación de la infraestructura computacional
+"INCIPIENTE"
+* No se pudo validar configuración, ya que no se configuró DHCP y hay muchos errores de configuración
+
+STC0303. Integración de seguridad en proyectos computacionales
+"INCIPIENTE"
+* No hay evidencia de configuración de ACLs.

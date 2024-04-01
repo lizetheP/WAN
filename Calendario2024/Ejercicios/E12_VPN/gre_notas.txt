@@ -1,0 +1,58 @@
+---------------------------
+Router R1
+---------------------------
+
+en
+config t
+
+interface tunnel 0
+! Hemos creado la interfaz de tunnel.
+! Necesitamos unos pocos comandos para completar la configuración GRE.
+tunnel source g0/0/0
+!tunnel source y tenemos que especificar qué interface física en el R1 
+!será usada para el túnel. Usaremos la interface conectada al proveedor 
+!de servicios, g0/0/0
+
+!Ahora el destino del túnel, especificar la dirección IP 
+!del otro extremo del túnel, de R2.
+!Ingresaremos la IP de la interfaz WAN de R2, 200.0.0.2
+
+tunnel destination 200.0.0.2
+
+! Y, por último, la propia interfaz del túnel virtual necesita una dirección IP.
+
+ip address 192.168.1.1 255.255.255.252
+
+! Esta es toda la configuración requerida.
+tunnel source
+tunnel destination y 
+la dirección IP.
+
+interface tunnel 0
+tunnel source g0/0/0 !interface física en el R1 que será usada para el túnel
+tunnel destination 200.0.0.2 ! Dirección IP del otro extremo del tunnel
+ip address 192.168.1.1 255.255.255.252 ! Dirección IP de la interfaz del túnel
+
+Revisaremos el status: sh ip int brief
+
+Router R2
+---------------------------
+Haremos lo mismo en el R2.
+
+interface tunnel 0
+tunnel source g0/0/0 !interface física en el R1 que será usada para el túnel
+tunnel destination 100.0.0.2 ! Dirección IP del otro extremo del tunnel
+! La dirección IP de la interface WAN del router R1
+ip address 192.168.1.2 255.255.255.252 
+
+Revisaremos el status: sh ip int brief
+
+Existe la interfaz del túnel, pero aún está inactiva. 
+¿Por qué es eso, a pesar de que hemos configurado ambos lados?
+
+sh ip route
+
+R2 no tiene una ruta conectada para su interfaz de túnel, 
+por supuesto, porque la interfaz aún está inactiva.
+
+

@@ -1,0 +1,120 @@
+! ===========================
+! ======== RFrontera ========
+! ===========================
+
+ena
+config t
+hostname RFrontera
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+int s0/0/1
+desc Interfaz que conecta con ISP
+ip address 
+no shut
+
+! Declaración de subinterfaces.
+
+! Administrative VLAN 1
+
+! Manager VLAN 10
+
+! Users VLAN 20
+
+! Services VLAN 30
+
+int g0/0
+no shut
+
+! Establecer una ruta por default que se encargue de sacar el tráfico a Internet
+
+end
+
+! ====================
+! ===== SCompany =====
+! ====================
+
+ena
+conf t
+hostname SCompany
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+
+! Definición de los puertos troncales
+
+end
+
+! ===================
+! ====== SOeste ======
+! ===================
+
+ena
+conf t
+hostname SOeste
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+
+! Definición de los puertos de acceso
+
+! Definición de los puertos troncales
+
+end
+! =====================
+! ====== SEste ========
+! =====================
+
+
+! ===========================
+! ======== ISP ==========
+! ===========================
+
+! Ruta estática para conectar el tráfico de Internet con la red local.

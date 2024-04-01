@@ -1,0 +1,65 @@
+1. Cambiar Tunnel GRE por Tunnel VPN IPsec
+2. Eliminar Tunnel IPs
+3. Eliminar interfaces tunnel 0 en ruteador WEST y EAST
+4. Cambiar nombre de router ISP por NORTH
+5. Configurar OSPF en router WEST
+6. Configurar OSPF en router EAST
+7. Configurar OSPF en router NORTH
+8. Probar conectividad entre PC-A, PC-B y la PC-C
+9. Quitar ruta por default entre WEST y NORTH
+
+
+
+
+-------------------------------------
+Router WEST
+-------------------------------------
+
+access-list 101 permit ip 172.16.1.0 0.0.0.255 172.16.2.0 0.0.0.255
+
+crypto isakmp policy 10
+encryption aes 256
+authentication pre-share
+group 5
+exit
+
+crypto isakmp key vpn2023 address 10.2.2.1
+
+crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+
+crypto map VPN-MAP 10 ipsec-isakmp
+description VPN connection to East
+set peer 10.2.2.1
+set transform-set VPN-SET
+match address 101
+exit
+
+interface s0/1/0
+crypto map VPN-MAP
+
+-------------------------------------
+Router EAST
+-------------------------------------
+access-list 101 permit ip 172.16.2.0 0.0.0.255 172.16.1.0 0.0.0.255
+
+crypto isakmp policy 10
+encryption aes 256
+authentication pre-share
+group 5
+exit
+
+crypto isakmp key vpn2023 address 10.1.1.1
+
+crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+
+crypto map VPN-MAP 10 ipsec-isakmp
+description VPN connection to West
+set peer 10.1.1.1
+set transform-set VPN-SET
+match address 101
+exit
+
+interface s0/1/1
+crypto map VPN-MAP
+
+

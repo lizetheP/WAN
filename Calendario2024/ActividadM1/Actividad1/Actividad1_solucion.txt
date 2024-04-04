@@ -36,6 +36,7 @@ int g0/0/0
 ip address 10.21.52.132 255.255.255.224
 no shut
 
+banner motd #¡Advertencia! Solo personal autorizado.#
 
 ---------------------------
 router ETA
@@ -68,6 +69,8 @@ int g0/0/1
 ip address 10.21.52.190 255.255.255.252
 no shut
 
+banner motd #¡Advertencia! Solo personal autorizado.#
+
 ---------------------------
 CONFIGURE ROUTER ON STICK
 ---------------------------
@@ -92,6 +95,8 @@ line vty 0 4
 password REMOTO2020
 login
 logging sync
+
+banner motd #¡Advertencia! Solo personal autorizado.#
 
 int g0/0/0
 ip address 10.21.52.178 255.255.255.248
@@ -135,6 +140,9 @@ SWITCH OMEGA
 ---------------------------------------------
 en
 config t
+
+hostname OMEGA
+
 vlan 100
 vlan 200
 
@@ -155,6 +163,8 @@ switchport mode trunk
 ---------------------------------------------
 SWITCH FI
 ---------------------------------------------
+
+hostname FI
 en
 config t
 vlan 100

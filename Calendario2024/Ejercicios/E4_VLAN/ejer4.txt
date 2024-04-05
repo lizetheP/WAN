@@ -1,0 +1,135 @@
+Switch MLS
+-------------------------------------------
+en
+config t
+
+hostname MLS
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 15
+password cisco
+login
+logging sync
+
+! CONFIGURAR EL PUERTO G0/2
+
+
+! CONFIGURAR VLANs
+
+
+! CONFIGURAR PUERTOS TRONCALES
+
+
+! CONFIGURAR RUTA POR DEFAULT HACIA INTERNET
+
+
+!-------------
+!Switch S1
+!-------------
+en
+config t
+
+hostname S1
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 15
+password cisco
+login
+logging sync
+
+! CONFIGURAR VLANs
+
+
+! CONFIGURAR PUERTOS TRONCALES
+
+
+! CONFIGURAR IP DEL SWITCH
+
+
+!-------------
+!Switch S2
+!-------------
+en
+config t
+
+hostname S2
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 15
+password cisco
+login
+logging sync
+
+! CONFIGURAR VLANs
+
+
+! CONFIGURAR PUERTOS DE ACCESO
+
+
+! CONFIGURAR PUERTOS TRONCALES
+
+
+! CONFIGURAR IP DEL SWITCH
+
+
+!-------------
+!Switch S3
+!-------------
+en
+config t
+
+hostname S3
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 15
+password cisco
+login
+logging sync
+
+! CONFIGURAR VLANs
+
+
+! CONFIGURAR PUERTOS DE ACCESO
+
+
+! CONFIGURAR PUERTOS TRONCALES
+
+
+! CONFIGURAR IP DEL SWITCH
+
+
+!----------------------------------------
+! MyISP
+!----------------------------------------
+
+! CONFIGURAR RUTAS ESTÁTICAS HACIA LAS REDES DE LA EMPRESA
+
+
+
+
+
+

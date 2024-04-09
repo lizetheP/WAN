@@ -10,25 +10,18 @@ enable password class
 
 no ip domain-lookup
 
+! Servicio de DHCP
+
+
 interface Loopback0
 ip address 2.2.2.2 255.255.255.248
-
-interface GigabitEthernet0/0
-ip address 200.10.5.62 255.255.255.192
-desc Enlace con Empleados
-no shut
-
-interface GigabitEthernet0/1
-ip address 200.10.5.70 255.255.255.248
-desc Enlace con Directivos
-no shut
 
 interface S0/0/1
 ip address 50.87.6.34 255.255.255.252
 desc Enlace con ISP
 no shut
 
-banner motd # Prohibido entrar a este router sin autorizacin !!! #
+banner motd # Prohibido entrar a este router sin autorizacion !!! #
 
 line con 0
 password cisco
@@ -69,6 +62,9 @@ password cisco
 login
 exit
 
+! Configurar la IP del switch
+
+
 end
 
 ---------------------------
@@ -95,6 +91,9 @@ line vty 0 15
 password cisco
 login
 exit
+
+! Configurar la IP del switch
+
 
 end
 

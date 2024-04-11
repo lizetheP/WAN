@@ -1,0 +1,147 @@
+---------------------------------------------------------------
+router RCohaus
+---------------------------------------------------------------
+ena
+config t
+hostname RCohaus
+enable secret class
+no ip domain-lookup
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+int s0/0/1
+ip address 210.32.1.65 255.255.255.252 
+no shut
+
+int g0/1.1
+description VLAN Gestion
+encapsulation dot1q 1
+ip add 195.2.8.138 255.255.255.252
+
+int g0/1.60
+description VLAN Administradores
+encapsulation dot1q 60
+ip add 195.2.8.134 255.255.255.248
+
+int g0/1.70
+description VLAN Usuarios
+encapsulation dot1q 70
+ip add 195.2.8.126 255.255.255.128
+
+int g0/1
+no shut
+
+ip route 0.0.0.0 0.0.0.0 s0/0/1
+
+ip dhcp excluded-address 195.2.8.126
+
+ip dhcp pool Usuarios
+network 195.2.8.0 255.255.255.128
+default-router 195.2.8.126
+
+end
+
+-----------------------------------------------------
+Switch SCohaus
+-----------------------------------------------------
+ena
+config t
+hostname SCohaus
+enable secret class
+no ip domain-lookup
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 15
+password cisco
+login
+
+vlan 60
+name Administradores
+exit
+
+vlan 70
+name Usuarios
+exit
+
+interface range f0/1-8
+switchport mode access
+switchport access vlan 60
+
+interface range f0/9-24
+switchport mode access
+switchport access vlan 70
+
+interface g0/1
+switchport mode trunk
+no shut
+
+int vlan 1
+description VLAN Administrativa
+ip address 195.2.8.137 255.255.255.252
+no shut
+
+ip default-gateway 195.2.8.138
+
+end
+
+
+!-------------
+!ISP
+!-------------
+
+en
+config t
+
+hostname ISP
+enable password class
+no ip domain-lookup
+
+interface Loopback0
+ip address 120.2.2.2 255.0.0.0
+
+interface Loopback1
+ip address 165.23.0.30 255.255.0.0
+
+interface Loopback2
+ip address 193.254.5.2 255.255.255.0
+
+interface GigabitEthernet0/0
+ip address 23.192.157.1 255.255.255.0
+no shut
+
+interface Serial0/0/0
+ip address 210.32.1.66 255.255.255.252
+clock rate 128000
+no shutdown
+
+banner motd #Prohibido entrar a este router sin autorizacin !!!#
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 4
+password cisco
+login
+
+ip route 195.2.8.128 255.255.255.248 Serial0/0/0
+ip route 195.2.8.0 255.255.255.128 Serial0/0/0
+ip route 195.2.8.136 255.255.255.252 Serial0/0/0  
+
+end
+
+no ip route 195.2.8.128 255.255.255.248 Serial0/0/0
+no ip route 195.2.8.0 255.255.255.128 Serial0/0/0
+no ip route 195.2.8.136 255.255.255.252 Serial0/0/0  

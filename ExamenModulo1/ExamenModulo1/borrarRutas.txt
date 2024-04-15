@@ -1,0 +1,9 @@
+no ip route 195.2.8.0 255.255.255.192 Serial0/0/1 
+no ip route 195.2.8.64 255.255.255.224 Serial0/0/1 
+no ip route 195.2.8.96 255.255.255.248 Serial0/0/1 
+no ip route 206.7.10.0 255.255.255.240 Serial0/0/1 
+
+no ip route 195.2.8.0 255.255.255.192 Serial0/0/0 
+no ip route 195.2.8.64 255.255.255.224 Serial0/0/0 
+no ip route 195.2.8.96 255.255.255.248 Serial0/0/0 
+no ip route 205.40.20.0 255.255.255.240 Serial0/0/0 

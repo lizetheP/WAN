@@ -1,0 +1,379 @@
+! ===========================
+! ======== Regus ==========
+! ===========================
+
+ena
+config t
+hostname Regus
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+ip dhcp excluded-address 192.168.8.129 192.168.8.130
+ip dhcp excluded-address 192.168.8.65
+
+ip dhcp pool VLAN50
+network 192.168.8.128 255.255.255.240
+dns-server 5.5.5.5
+default-router 192.168.8.129
+
+ip dhcp pool VLAN60
+network 192.168.8.64 255.255.255.192
+dns-server 5.5.5.5
+default-router 192.168.8.65
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+int g0/2
+no switchport
+desc Enlace con RFrontera
+ip address 172.25.1.17 255.255.255.252
+no shut
+
+! Creación de la base de datos de las VLANs
+
+vlan 50
+name Administradores
+exit
+
+vlan 60
+name Usuarios
+exit
+
+! Configuración de vlans
+
+int vlan 1
+ip address 192.168.8.161 255.255.255.252
+no shut
+
+int vlan 50
+ip address 192.168.8.129 255.255.255.240
+
+int vlan 60
+ip address 192.168.8.65 255.255.255.192
+
+int g0/1
+switchport mode trunk
+switchport trunk encapsulation dot1q
+no shut
+
+ip routing
+
+router ospf 1
+network 192.168.8.64 0.0.0.63 area 0
+network 192.168.8.128 0.0.0.15 area 0
+network 192.168.8.160 0.0.0.3 area 0
+network 172.25.1.16 0.0.0.3 area 0
+passive-interface g0/1
+exit
+
+! ===========================
+! ======== RFrontera ========
+! ===========================
+
+ena
+config t
+hostname RFrontera
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+ip dhcp excluded-address 172.16.10.6
+
+ip dhcp pool Visitantes
+network 172.16.10.0 255.255.255.248
+dns-server 5.5.5.5
+default-router 172.16.10.6
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+int g0/1
+desc Enlace con Regus
+ip address 172.25.1.18 255.255.255.252
+no shut
+
+int g0/0
+desc Enlace con Visitantes
+ip address 172.16.10.6 255.255.255.248
+no shut
+
+int s0/0/1
+desc Enlace con ISP
+ip address 210.32.1.74 255.255.255.252
+clock rate 128000
+no shut
+
+! Establecer una ruta por default que se encargue de sacar el tráfico a Internet
+ip route 0.0.0.0 0.0.0.0 s0/0/1
+
+router ospf 1
+network 172.16.10.0 0.0.0.7 area 0
+network 172.25.1.16 0.0.0.3 area 0
+passive-interface s0/0/1
+passive-interface g0/0
+default-information originate
+exit
+
+!NAT
+!----------------------------------------------------------------
+!Traduccion dinamica uno a uno, por cada direccion IP privada 
+!se asignara una direccion IP publica.
+
+ip nat pool MyPool 20.5.4.129 20.5.4.135 netmask 255.255.255.248
+ip nat inside source list 1 pool MyPool overload
+access-list 1 permit any
+
+! Traduccion estatica
+!--------------------------------
+ip nat inside source static 192.168.8.130 20.5.4.128
+
+! Configuración de interfaces de nateo interno y externo
+!------------------------------------------------------
+
+int g0/0
+ip nat inside
+exit
+
+int g0/1
+ip nat inside
+exit
+
+int s0/0/1
+ip nat outside
+exit
+
+
+end
+
+! ====================
+! ===== SRegus ======
+! ====================
+
+ena
+conf t
+hostname SRegus
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+vlan 50
+name Administradores
+exit
+
+vlan 60
+name Usuarios
+exit
+
+! Definición de puertos trunk
+int g0/1
+switchport mode trunk
+no shut
+exit
+
+int fa0/1
+switchport mode trunk
+no shut
+exit
+
+int fa0/2
+switchport mode trunk
+no shut
+exit
+
+! Configuración de la IP del switch y su gateway
+
+int vlan 1
+description VLAN administrativa
+ip address 192.168.8.162 255.255.255.252
+no shut
+exit
+
+ip default-gateway 192.168.8.161
+
+end
+
+
+! ================
+! ====== S1 ======
+! ================
+
+ena
+conf t
+hostname S1
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+vlan 50
+name Administradores
+exit
+
+vlan 60
+name Usuarios
+exit
+
+! Definición de los puertos de acceso
+int range f0/2-7
+switchport mode access
+switchport access vlan 50
+exit
+
+int range f0/8-24
+switchport mode access
+switchport access vlan 60
+exit
+
+! Definición de los puertos troncales
+
+int f0/1
+switchport mode trunk
+no shut
+exit
+
+! ================
+! ====== S2 ======
+! ================
+
+ena
+conf t
+hostname S2
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+vlan 50
+name Administradores
+exit
+
+vlan 60
+name Usuarios
+exit
+
+! Definición de los puertos de acceso
+int range f0/2-7
+switchport mode access
+switchport access vlan 50
+exit
+
+int range f0/8-24
+switchport mode access
+switchport access vlan 60
+exit
+
+! Definición de los puertos troncales
+
+int f0/1
+switchport mode trunk
+no shut
+exit
+
+! ===========================
+! ======== ISP ==========
+! ===========================
+
+ena
+config t
+hostname ISP
+no ip domain-lookup
+service password-encryption
+
+enable secret class
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+interface GigabitEthernet0/0
+ip address 45.60.86.1 255.255.255.0
+no shutdown
+
+interface GigabitEthernet0/1
+ip address 5.0.0.1 255.0.0.0
+no shutdown
+
+interface Serial0/0/0
+ip address 210.32.1.73 255.255.255.252
+no shutdown
+
+ip route 192.168.8.64 255.255.255.192 s0/0/0
+ip route 192.168.8.128 255.255.255.240 s0/0/0
+ip route 192.168.8.160 255.255.255.252 s0/0/0
+ip route 172.16.10.0 255.255.255.248 s0/0/0
+
+ip route 20.5.4.128 255.255.255.248 210.32.1.74
+
+end

@@ -1,0 +1,409 @@
+! ===========================
+! ======== RCohaus ==========
+! ===========================
+
+ena
+config t
+hostname RCohaus
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+int s0/0/0
+desc Enlace con RF
+ip address 192.168.7.201 255.255.255.252
+clock rate 128000
+no shut
+
+! Declaración de subinterfaces.
+
+! Nativa VLAN 1
+int g0/0.1
+description VLAN Nativa
+encapsulation dot1Q 1
+ip address 172.29.5.145 255.255.255.248
+
+! Administradores VLAN 50
+int g0/0.50
+description VLAN Administradores
+encapsulation dot1Q 50
+ip address 172.29.5.129 255.255.255.240
+ip helper-address 192.168.7.202
+
+! Usuarios VLAN 100
+int g0/0.100
+description VLAN Usuarios
+encapsulation dot1Q 100
+ip address 172.29.5.1 255.255.255.128
+ip helper-address 192.168.7.202
+
+int g0/0
+no shut
+
+router ospf 1
+network 172.29.5.0 0.0.0.127 area 0
+network 172.29.5.128 0.0.0.15 area 0
+network 172.29.5.144 0.0.0.7 area 0
+network 192.168.7.200 0.0.0.3 area 0
+passive-interface g0/0
+
+! Configuración de interfaces de nateo interno
+!---------------------------------------------------------
+int g0/0
+ip nat inside
+exit
+
+int s0/0/0
+ip nat inside
+exit
+
+end
+
+! ===========================
+! ======== RFrontera ========
+! ===========================
+
+ena
+config t
+hostname RF
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+ip dhcp excluded-address 172.29.5.129 172.29.5.130
+ip dhcp excluded-address 172.29.5.1
+ip dhcp excluded-address 172.29.20.30
+
+ip dhcp pool Visitantes
+network 172.31.20.0 255.255.255.224
+default-router 172.31.20.30
+dns-server 7.7.7.7
+
+ip dhcp pool VLAN50
+network 172.29.5.128 255.255.255.240
+dns-server 7.7.7.7
+default-router 172.29.5.129
+
+ip dhcp pool VLAN100
+network 172.29.5.0 255.255.255.128
+dns-server 7.7.7.7
+default-router 172.29.5.1
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+int g0/1
+desc Enlace con Visitantes
+ip address 172.31.20.30 255.255.255.224
+no shut
+
+int s0/0/1
+desc Enlace con RCohaus
+ip address 192.168.7.202 255.255.255.252
+no shut
+
+int s0/0/0
+desc Enlace con ISP
+ip address 210.32.1.70 255.255.255.252
+clock rate 1280000
+no shut
+
+! Establecer una ruta por default que se encargue de sacar el tráfico a Internet
+ip route 0.0.0.0 0.0.0.0 s0/0/0
+
+router ospf 1
+network 172.31.20.0 0.0.0.31 area 0
+network 192.168.7.200 0.0.0.3 area 0
+passive-interface s0/0/0
+passive-interface g0/1
+default-information originate
+
+!NAT
+!----------------------------------------------------------------
+!Traduccion dinamica uno a uno, por cada direccion IP privada 
+!se asignara una direccion IP publica.
+
+ip nat pool MyPool 190.15.7.49 190.15.7.63 netmask 255.255.255.240
+ip nat inside source list 1 pool MyPool
+access-list 1 permit any
+
+! Traduccion estatica
+!--------------------------------
+ip nat inside source static 172.29.5.130 190.15.7.48
+
+! Configuración de interfaces de nateo interno y externo
+!---------------------------------------------------------
+int g0/1
+ip nat inside
+exit
+
+int s0/0/1
+ip nat inside
+exit
+
+int s0/0/0
+ip nat outside
+exit
+end
+
+! ====================
+! ===== SCohaus ======
+! ====================
+
+ena
+conf t
+hostname SCohaus
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+vlan 50
+name Administradores
+exit
+
+vlan 100
+name Usuarios
+exit
+
+! Definición de puertos trunk
+int g0/2
+switchport mode trunk
+no shut
+exit
+
+int fa0/1
+switchport mode trunk
+no shut
+exit
+
+int fa0/2
+switchport mode trunk
+no shut
+exit
+
+! Configuración de la IP del switch y su gateway
+
+int vlan 1
+description VLAN administrativa
+ip address 172.29.5.150 255.255.255.248
+no shut
+exit
+
+ip default-gateway 172.29.5.145
+
+end
+
+
+! ================
+! ====== S1 ======
+! ================
+
+ena
+conf t
+hostname S1
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+vlan 500
+name Administradores
+exit
+
+vlan 800
+name Usuarios
+exit
+
+! Definición de los puertos de acceso
+int range f0/2-9
+switchport mode access
+switchport access vlan 50
+exit
+
+int range f0/10-24
+switchport mode access
+switchport access vlan 100
+exit
+
+! Definición de los puertos troncales
+
+int f0/1
+switchport mode trunk
+no shut
+exit
+
+
+! ================
+! ====== S2 ======
+! ================
+
+ena
+conf t
+hostname S2
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+vlan 500
+name Administradores
+exit
+
+vlan 800
+name Usuarios
+exit
+
+! Definición de los puertos de acceso
+int range f0/2-9
+switchport mode access
+switchport access vlan 50
+exit
+
+int range f0/10-24
+switchport mode access
+switchport access vlan 100
+exit
+
+! Definición de los puertos troncales
+
+int f0/1
+switchport mode trunk
+no shut
+exit
+
+end
+
+! ===========================
+! ======== ISP ==========
+! ===========================
+
+ena
+config t
+hostname ISP
+no ip domain-lookup
+service password-encryption
+
+enable secret class
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+interface GigabitEthernet0/0
+ip address 23.66.53.1 255.255.255.0
+no shutdown
+
+interface GigabitEthernet0/1
+ip address 7.0.0.1 255.0.0.0
+no shutdown
+
+interface Serial0/0/1
+ip address 210.32.1.69 255.255.255.252
+no shutdown
+
+ip route 172.29.5.0 255.255.255.128 Serial0/0/1
+ip route 172.29.5.128 255.255.255.240 Serial0/0/1
+ip route 172.29.5.144 255.255.255.248 Serial0/0/1
+ip route 172.31.20.0 255.255.255.224 Serial0/0/1
+
+ip route 190.15.7.48 255.255.255.240 210.32.1.70
+
+end
+
+
+! Lista de acceso
+!--------------------------------
+! Lista de acceso extendida que impida que los equipos terminales de usuarios
+! accedan a la vlan de administradores.
+
+!RCohaus
+access-list 100 deny ip 172.29.5.0 0.0.0.127 172.29.5.128 0.0.0.15
+access-list 100 permit ip any any
+
+int g0/0.100
+ip access-group 100 in
+
+Lista de acceso para que los visitantes no puedan acceder al servidor cohaus via web, ni ftp
+!RF
+access-list 105 deny tcp 172.31.20.0 0.0.0.31 host 172.29.5.130 eq 80
+access-list 105 deny tcp 172.31.20.0 0.0.0.31 host 172.29.5.130 eq 20
+access-list 105 deny tcp 172.31.20.0 0.0.0.31 host 172.29.5.130 eq 21
+access-list 105 permit ip any any
+
+int g0/1
+ip access-group 105 in
+
+

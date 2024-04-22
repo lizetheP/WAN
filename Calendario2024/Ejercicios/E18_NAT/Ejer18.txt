@@ -1,6 +1,6 @@
----------------------------------------------------------------
-Configuración del router A
----------------------------------------------------------------
+!---------------------------------------------------------------
+!Router A
+!---------------------------------------------------------------
 en
 config t
 
@@ -9,23 +9,20 @@ hostname RA
 interface G0/1
 ip address 10.0.1.254 255.255.254.0
 no shut
-exit
 
 interface Serial0/1/0
 ip address 10.0.3.130 255.255.255.252
 clock rate 128000
 no shut
-exit
 
 router ospf 1
 passive-interface GigabitEthernet0/1
 network 10.0.0.0 0.0.1.255 area 0
 network 10.0.3.128 0.0.0.3 area 0
-exit
 
----------------------------------------------------------------
-Configuración del router B
----------------------------------------------------------------
+!---------------------------------------------------------------
+!Router B
+!---------------------------------------------------------------
 en
 config t
 
@@ -34,17 +31,14 @@ hostname RB
 interface G0/1
 ip address 10.0.7.254 255.255.252.0
 no shut
-exit
 
 interface Serial0/1/0
 ip address 65.10.8.66 255.255.255.224
 no shut
-exit
 
 interface Serial0/1/1
 ip address 10.0.3.129 255.255.255.252
 no shut
-exit
 
 ip route 0.0.0.0 0.0.0.0 s0/1/0
 
@@ -52,5 +46,5 @@ router ospf 1
 passive-interface GigabitEthernet0/1
 passive-interface Serial0/1/0
 network 10.0.3.128 0.0.0.3 area 0
+network 10.0.4.0 0.0.3.255 area 0
 default-information originate
-exit

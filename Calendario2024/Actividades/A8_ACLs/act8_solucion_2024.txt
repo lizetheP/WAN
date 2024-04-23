@@ -28,15 +28,16 @@ access-list 115 permit ip any any
 int s0/0/0
 ip access-group 115 out
 
-------------------------------------------------------------
-Ejercicio 3.
-------------------------------------------------------------
-Diseña una lista de control de acceso extendida que únicamente permita el acceso al servidor de Finanzas desde cualquier IP asociada con la subred de la VLAN de Directores pero que impida el acceso a este servidor desde otras direcciones IP. En esta ocasión el servidor de Finanzas al no permitir ningún tipo de tráfico desde direcciones diferentes de Directores dará la impresión de que no existe. 
+----------------------------------------------------------------------
+Router B
+access-list 115 deny tcp 132.254.89.0 0.0.0.127 host 65.0.1.10 eq 80
+access-list 115 permit ip any any
 
-Router A
-access-list 125 permit ip 132.254.89.192 0.0.0.31 host 132.254.89.129
-access-list 125 deny ip any host 132.254.89.129
-access-list 125 permit ip any any
+int g0/1
+ip access-group 115 in
 
-int g0/0.20
-ip access-group 125 out  
+access-list 120 deny tcp 132.254.89.232 0.0.0.7 host 65.0.1.10 eq 80
+access-list 120 permit ip any any 
+
+int g0/0
+ip access-group 120 in

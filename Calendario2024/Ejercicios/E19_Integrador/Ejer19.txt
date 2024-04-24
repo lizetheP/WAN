@@ -1,0 +1,208 @@
+! ======================
+! ======== RA ==========
+! ======================
+
+ena
+config t
+hostname RA
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+int s0/0/0
+desc Enlace con RB
+ip address 10.0.3.130 255.255.255.252
+clock rate 128000
+no shut
+
+! Declaración de subinterfaces
+
+
+! Configuración de OSPF
+
+
+! ====================
+! ==== SCompany ======
+! ====================
+
+ena
+conf t
+hostname SCompany
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+
+
+! Definición de puertos trunk
+
+
+! Configuración de la IP del switch y su default gateway
+
+
+
+! ===================
+! ====== SOeste =====
+! ===================
+
+ena
+conf t
+hostname SOeste
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+
+
+! Definición de los puertos de acceso
+
+
+! Definición de los puertos troncales
+
+
+! Configuración de la IP del switch y su default gateway
+
+! =====================
+! ====== SEste ========
+! =====================
+
+ena
+conf t
+hostname SEste
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+
+
+! Definición de los puertos de acceso
+
+
+! Definición de los puertos troncales
+
+
+! Configuración de la IP del switch y su default gateway
+
+
+! ======================
+! ======== RB ==========
+! ======================
+
+en
+config t
+
+hostname RB
+
+interface G0/1
+ip address 10.0.7.254 255.255.252.0
+no shut
+exit
+
+interface Serial0/1/0
+ip address 65.10.8.66 255.255.255.224
+no shut
+exit
+
+interface Serial0/1/1
+ip address 10.0.3.129 255.255.255.252
+no shut
+exit
+
+router ospf 1
+passive-interface GigabitEthernet0/1
+passive-interface Serial0/1/0
+network 10.0.3.128 0.0.0.3 area 0
+network 10.0.4.0 0.0.3.255 area 0
+default-information originate
+exit
+
+! Configuración de DHCP centralizado
+
+ip dhcp excluded-address 10.0.7.254
+
+ip dhcp pool RB
+network 10.0.4.0 255.255.252.0 
+default-router 10.0.7.254
+dns-server 5.5.5.5
+exit
+
+! Configuración de NAT estático
+
+
+! Configuración de PAT
+
+
+! Configuración de interfaces con nat interno y externo
+
+
+! =======================
+! ======== ISP ==========
+! =======================
+
+! Ya configurado
+
+! Configuración de rutas estáticas hacia las redes de la empresa
+
+
+! Configuración de ruta estática hacia RB con el 
+! rango de direcciones de la red pública asignada
+

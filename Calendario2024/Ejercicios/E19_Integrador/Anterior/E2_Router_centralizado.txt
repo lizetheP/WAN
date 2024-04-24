@@ -1,0 +1,389 @@
+! ===========================
+! ======== RA ==========
+! ===========================
+
+ena
+config t
+hostname RA
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+int s0/0/0
+desc Enlace con RB
+ip address 10.0.3.130 255.255.255.252
+clock rate 128000
+no shut
+
+! Declaración de subinterfaces.
+
+! Administrative VLAN 1
+int g0/0.1
+description VLAN Native
+encapsulation dot1Q 1
+ip address 10.0.1.6 255.255.255.248
+
+! Users VLAN 20
+int g0/0.20
+description VLAN Users
+encapsulation dot1Q 20
+ip address 10.0.2.30 255.255.255.224
+ip helper-address 10.0.3.129
+
+! Services VLAN 30
+int g0/0.30
+description VLAN Services
+encapsulation dot1Q 30
+ip address 10.0.3.14 255.255.255.240
+ip helper-address 10.0.3.129
+
+int g0/0
+no shut
+
+router ospf 1
+passive-interface GigabitEthernet0/0
+network 10.0.1.0 0.0.0.7 area 0
+network 10.0.2.0 0.0.0.31 area 0
+network 10.0.3.0 0.0.0.15 area 0
+network 10.0.3.128 0.0.0.3 area 0
+exit
+
+! ====================
+! ===== SCompany ======
+! ====================
+
+ena
+conf t
+hostname SCompany
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+
+vlan 20
+name Users
+exit
+
+vlan 30
+name Services
+exit
+
+! Definición de puertos trunk
+int g0/1
+switchport mode trunk
+no shut
+exit
+
+int f0/1
+switchport mode trunk
+no shut
+exit
+
+int f0/2
+switchport mode trunk
+no shut
+exit
+
+int vlan 1
+description VLAN administrativa
+ip address 10.0.1.1 255.255.255.248
+no shut
+exit
+
+ip default-gateway 10.0.1.6
+
+
+! ===================
+! ====== SOeste ======
+! ===================
+
+ena
+conf t
+hostname SOeste
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+
+vlan 20
+name Users
+exit
+
+vlan 30
+name Services
+exit
+
+! Definición de los puertos de acceso
+
+int range f0/2-19
+switchport mode access
+switchport access vlan 20
+exit
+
+int range f0/20-24
+switchport mode access
+switchport access vlan 30
+exit
+
+! Definición de los puertos troncales
+
+int f0/1
+switchport mode trunk
+no shut
+exit
+
+int vlan 1
+description VLAN administrativa
+ip address 10.0.1.2 255.255.255.248
+no shut
+exit
+
+ip default-gateway 10.0.1.6
+
+end
+! =====================
+! ====== SEste ========
+! =====================
+
+ena
+conf t
+hostname SEste
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+
+vlan 20
+name Users
+exit
+
+vlan 30
+name Services
+exit
+
+! Definición de los puertos de acceso
+
+int range f0/2-19
+switchport mode access
+switchport access vlan 20
+exit
+
+int range f0/20-24
+switchport mode access
+switchport access vlan 30
+exit
+
+! Definición de los puertos troncales
+
+int f0/1
+switchport mode trunk
+no shut
+exit
+
+int vlan 1
+description VLAN administrativa
+ip address 10.0.1.3 255.255.255.248
+no shut
+exit
+
+ip default-gateway 10.0.1.6
+
+! Listas de acceso
+! RA
+access-list 1 deny 10.0.4.0 0.0.3.255
+access-list 1 permit any
+
+int g0/0.30
+ip access-group 1 out
+
+access-list 101 deny tcp 10.0.2.0 0.0.0.31 host 52.84.150.54 eq 80
+access-list 101 permit ip any any
+
+int g0/0.20
+ip access-group 101 in
+
+!---------------------------------------------------------------
+!Router B
+!---------------------------------------------------------------
+en
+config t
+
+hostname RB
+
+interface G0/1
+ip address 10.0.7.254 255.255.252.0
+no shut
+exit
+
+interface Serial0/1/0
+ip address 65.10.8.66 255.255.255.224
+no shut
+exit
+
+interface Serial0/1/1
+ip address 10.0.3.129 255.255.255.252
+no shut
+exit
+
+!DHCP
+!----------------
+
+ip dhcp excluded-address 10.0.2.30
+ip dhcp excluded-address 10.0.3.1
+ip dhcp excluded-address 10.0.3.14
+ip dhcp excluded-address 10.0.7.254
+
+ip dhcp pool RB
+network 10.0.4.0 255.255.252.0 
+default-router 10.0.7.254
+dns-server 5.5.5.5
+exit
+
+ip dhcp pool RA_Users
+network 10.0.2.0 255.255.255.224 
+default-router 10.0.2.30
+dns-server 5.5.5.5
+exit
+
+ip dhcp pool RA_Services
+network 10.0.3.0 255.255.255.240 
+default-router 10.0.3.14
+dns-server 5.5.5.5
+exit
+
+ip route 0.0.0.0 0.0.0.0 65.10.8.65
+
+router ospf 1
+passive-interface GigabitEthernet0/1
+passive-interface Serial0/1/0
+network 10.0.3.128 0.0.0.3 area 0
+network 10.0.4.0 0.0.3.255 area 0
+default-information originate
+exit
+
+!NAT
+!----------------------------------------------------------------
+!Traduccion dinamica uno a uno, por cada direccion IP privada 
+!se asignara una direccion IP publica.
+
+ip nat pool MyPool 180.15.2.129 180.15.2.255 netmask 255.255.255.128
+ip nat inside source list 1 pool MyPool
+access-list 1 permit any
+
+! Traduccion estatica
+!--------------------------------
+ip nat inside source static 10.0.3.1 180.15.2.128
+
+int g0/1
+ip nat inside
+exit
+
+int s0/1/1
+ip nat inside
+exit
+
+int s0/1/0
+ip nat outside
+exit
+
+
+!PAT
+!------------------------------
+!Traduccion dinamica de muchas direcciones IPs privadas contra 
+!una o pocas direcciones IP publicas para salir al exterior.
+
+ip nat inside source list 10 pool MyPool overload
+
+
+
+! ===========================
+! ======== ISP ==========
+! ===========================
+
+en
+config t
+
+hostname ISP
+
+service password-encryption
+
+enable secret class
+
+interface G0/0
+ip address 52.84.150.1 255.255.255.0
+no shut
+
+interface G0/1
+ip address 5.0.0.1 255.0.0.0
+no shut
+
+interface Serial0/0/0
+ip address 65.10.8.65 255.255.255.224
+clock rate 128000
+no shut
+
+ip route 10.0.2.0 255.255.255.224 Serial0/0/0 
+ip route 10.0.3.0 255.255.255.240 Serial0/0/0 
+ip route 10.0.1.0 255.255.255.248 Serial0/0/0 
+ip route 10.0.4.0 255.255.252.0 Serial0/0/0 
+
+ip route 180.15.2.128 255.255.255.128 s0/0/0

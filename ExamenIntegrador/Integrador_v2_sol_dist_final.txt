@@ -1,10 +1,10 @@
 ! ===========================
-! ======== Regus ==========
+! ======== RRegus ==========
 ! ===========================
 
 ena
 config t
-hostname Regus
+hostname RRegus
 
 no ip domain-lookup
 service password-encryption 
@@ -36,40 +36,35 @@ password cisco
 login
 exit
 
-int g0/2
-no switchport
+! Declaración de subinterfaces.
+
+int s0/0/1
 desc Enlace con RFrontera
 ip address 172.25.1.17 255.255.255.252
 no shut
 
-! Creación de la base de datos de las VLANs
-
-vlan 50
-name Administradores
-exit
-
-vlan 60
-name Usuarios
-exit
-
-! Configuración de vlans
-
-int vlan 1
+! Nativa VLAN 1
+int g0/0.1
+description VLAN Nativa
+encapsulation dot1Q 1
 ip address 192.168.8.161 255.255.255.252
-no shut
 
-int vlan 50
+! Administradores VLAN 50
+int g0/1.50
+description VLAN Administradores
+encapsulation dot1Q 50
 ip address 192.168.8.129 255.255.255.240
 
-int vlan 60
+! Usuarios VLAN 60
+int g0/1.60
+description VLAN Usuarios
+encapsulation dot1Q 60
 ip address 192.168.8.65 255.255.255.192
 
 int g0/1
-switchport mode trunk
-switchport trunk encapsulation dot1q
 no shut
 
-ip routing
+! Creación de la base de datos de las VLANs
 
 router ospf 1
 network 192.168.8.64 0.0.0.63 area 0
@@ -111,9 +106,10 @@ password cisco
 login
 exit
 
-int g0/1
+int s0/0/0
 desc Enlace con Regus
 ip address 172.25.1.18 255.255.255.252
+clock rate 128000
 no shut
 
 int g0/0

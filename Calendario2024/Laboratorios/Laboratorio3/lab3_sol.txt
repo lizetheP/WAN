@@ -1,0 +1,82 @@
+!------------------------------------------
+!--------- Gateway ------------------------
+!------------------------------------------
+
+en
+config t
+
+hostname Gateway
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+
+int g0/0/1
+ip address 192.168.1.1 255.255.255.0
+ip nat inside
+no shut
+
+int s0/1/1
+ip address 209.165.201.18 255.255.255.252
+ip nat outside
+no shut
+
+ip route 0.0.0.0 0.0.0.0 209.165.201.17
+
+ip nat inside source static 192.168.1.20 209.165.200.224
+
+access-list 1 permit 192.168.1.0 0.0.0.255
+ip nat pool public_access 209.165.200.242 209.165.200.255 netmask 255.255.255.224
+ip nat inside source list 1 pool public_access overload
+
+!--------------------------------------
+!--------- ISP ------------------------
+!--------------------------------------
+
+en
+config t
+
+hostname ISP
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+
+int Lo0
+ip address 192.31.7.1 255.255.255.255
+no shut
+
+int s0/1/0
+ip address 209.165.201.17 255.255.255.252
+clock rate 64000
+no shut
+
+ip route 209.165.200.224 255.255.255.224 209.165.201.18
+ip route 192.168.1.0 255.255.255.0 s0/1/0
+

@@ -386,19 +386,23 @@ end
 
 ! Lista de acceso
 !--------------------------------
-! Lista de acceso extendida que impida que los equipos terminales de usuarios
-! accedan a la vlan de administradores.
+! Lista de acceso extendida que impida que los equipos de la VLAN de Usuarios y Administradores
+! accedan al servidor DNS.com via web (http). El puerto de http es 80.
 
 !RCohaus
-access-list 100 deny ip 172.29.5.0 0.0.0.127 172.29.5.128 0.0.0.15
+access-list 100 deny tcp 192.168.8.128 0.0.0.15 host 5.5.5.5 eq 80
+access-list 100 deny tcp 192.168.8.64 0.0.0.63 host 5.5.5.5 eq 80
 access-list 100 permit ip any any
 
-int g0/0.100
+int g0/1.50
+no ip access-group 100 in
+
+int g0/1.60
 ip access-group 100 in
 
-Lista de acceso para que los visitantes no puedan acceder al servidor cohaus via web, ni ftp
+
+Lista de acceso para que los visitantes no puedan acceder al servidor cohaus via ftp
 !RF
-access-list 105 deny tcp 172.31.20.0 0.0.0.31 host 172.29.5.130 eq 80
 access-list 105 deny tcp 172.31.20.0 0.0.0.31 host 172.29.5.130 eq 20
 access-list 105 deny tcp 172.31.20.0 0.0.0.31 host 172.29.5.130 eq 21
 access-list 105 permit ip any any

@@ -1,0 +1,17 @@
+https://networklessons.com/quality-of-service/qos-marking-cisco-ios-router
+https://eclassvirtual.com/configuracion-de-qos-en-packet-tracer-para-el-ccna-200-301/
+https://eclassvirtual.com/configuracion-de-qos-en-packet-tracer-para-el-ccna-200-301/
+https://www.linkedin.com/pulse/dscp-ip-precedencedo-you-understand-difference-keith-bogart
+
+Los primeros 3 bits se utilizan para definir una precedencia. Cuanto mayor sea el valor, más importante será el paquete IP; en caso de congestión, el enrutador descartará primero los paquetes de baja prioridad. El tipo de bits de servicio se utiliza para asignar qué tipo de retraso, rendimiento y confiabilidad queremos.
+
+Precedence:
+
+000	Routine
+001	Priority
+010	Immediate
+011	Flash
+100	Flash Override
+101	Critic/Critical
+110	Internetwork Control
+111	Network Control

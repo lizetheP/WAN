@@ -26,23 +26,11 @@ login
 
 int g0/0/1
 ip address 192.168.1.1 255.255.255.0
-ip nat inside
 no shut
 
 int s0/1/1
 ip address 209.165.201.18 255.255.255.252
-ip nat outside
 no shut
-
-ip route 0.0.0.0 0.0.0.0 s0/1/1
-
-access-list 1 permit 192.168.1.0 0.0.0.255
-no ip nat pool public_access 209.165.200.225 209.165.200.231 netmask 255.255.255.248
-no ip nat inside source list 1 pool public_access overload
-
-ip nat inside source list 1 interface serial 0/1/1 overload
-
-ip nat inside source static tcp 192.168.1.2 23 209.165.201.18 65001
 
 !--------------------------------------
 !--------- ISP ------------------------
@@ -83,10 +71,6 @@ int g0/0/0
 ip address 10.0.0.1 255.0.0.0
 no shut
 
-ip route 209.165.200.224 255.255.255.248 209.165.201.18
-!ip route 192.168.1.0 255.255.255.0 s0/1/0
-
-
 !--------------------------
 !--------- S1 -------------
 !--------------------------
@@ -114,3 +98,4 @@ no shut
 ip default-Gateway 192.168.1.1
 
 end
+

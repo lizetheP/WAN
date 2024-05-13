@@ -1,0 +1,71 @@
+--------- ISP --------
+Ya configurado
+
+! Rutas estáticas hacia las redes de la empresa
+
+ip route 222.32.4.64 255.255.255.248 Serial0/1/0
+ip route 192.16.15.32 255.255.255.240 Serial0/1/0
+ip route 200.1.2.0 255.255.255.128 Serial0/1/0
+ 
+-------- RF -------
+enable
+config t
+
+hostname RF
+
+service password-enc
+no ip domain lookup
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+enable password class
+
+
+-------- R1 ----------
+enable
+config t
+
+hostname R1
+
+service password-enc
+no ip domain lookup
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+enable password class
+
+
+-------- R2 ----------
+enable
+config t
+
+hostname R2
+
+service password-enc
+no ip domain lookup
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+enable password class
+

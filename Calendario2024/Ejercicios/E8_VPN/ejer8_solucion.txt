@@ -1,0 +1,47 @@
+--------------------------------------
+Router R1
+--------------------------------------
+
+en
+config t
+
+interface tunnel 0
+tunnel source g0/0/0
+tunnel destination 200.0.0.2
+ip address 192.168.1.1 255.255.255.252
+exit
+
+ip route 0.0.0.0 0.0.0.0 100.0.0.1
+
+router ospf 1
+network 192.168.1.0 0.0.0.3 area 0
+!Eso habilita OSPF en la interfaz del túnel 0 
+!luego g0/0
+network 10.0.1.0 0.0.0.255 area 0
+!Haremos pasiva la interfaz g0/0 ya que no hay routers vecinos conectados a él.
+passive-interface g0/0
+exit
+
+--------------------------------------
+Router R2
+--------------------------------------
+en
+config t
+
+interface tunnel 0
+tunnel source g0/0/0
+tunnel destination 100.0.0.2
+ip address 192.168.1.2 255.255.255.252
+exit
+
+ip route 0.0.0.0 0.0.0.0 200.0.0.1
+
+router ospf 1
+network 192.168.1.0 0.0.0.3 area 0
+!Eso habilita OSPF en la interfaz del túnel 0
+!luego g0/0
+network 10.0.2.1 0.0.0.255 area 0
+!Haremos pasiva la interfaz g0/0 ya que no hay routers vecinos conectados a él.
+passive-interface g0/0
+exit
+

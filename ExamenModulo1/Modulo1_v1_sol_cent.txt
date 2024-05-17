@@ -1,10 +1,10 @@
 ! ===========================
-! ======== RCohaus ==========
+! ======== RPersonal ========
 ! ===========================
 
 ena
 config t
-hostname RCohaus
+hostname RPersonal
 
 no ip domain-lookup
 service password-encryption 
@@ -19,81 +19,82 @@ login
 logging synchronous 
 
 line vty 0 4 
-password cisco 
+password cisco
 login
 exit
 
-int s0/0/1
-desc Enlace con RFrontera
-ip address 150.7.20.194 255.255.255.252
+int s0/0/0
+desc Enlace con RHospital
+ip address 180.8.2.185 255.255.255.252
+clock rate 128000
 no shut
 
 ! Declaración de subinterfaces.
 
 ! Nativa VLAN 1
-int g0/1.1
+int g0/0.1
 description VLAN Nativa
 encapsulation dot1Q 1
-ip address 195.2.8.97 255.255.255.248
+ip address 170.15.3.177 255.255.255.248
 
-! Administradores VLAN 500
-int g0/1.500
-description VLAN Administradores
-encapsulation dot1Q 500
-ip address 195.2.8.65 255.255.255.224
-ip helper-address 150.7.20.193
+! Administrativos VLAN 70
+int g0/0.70
+description VLAN Administrativos
+encapsulation dot1Q 70
+ip address 170.15.3.161 255.255.255.240
+ip helper-address 180.8.2.186
 
-! Usuarios VLAN 800
-int g0/1.800
-description VLAN Usuarios
-encapsulation dot1Q 800
-ip address 195.2.8.1 255.255.255.192
-ip helper-address 150.7.20.193
+! Medicos 90
+int g0/0.90
+description VLAN Medicos
+encapsulation dot1Q 90
+ip address 170.15.3.129 255.255.255.224
+ip helper-address 180.8.2.186
 
-int g0/1
+int g0/0
 no shut
 
 router ospf 2024
-network 195.2.8.0 0.0.0.63 area 0
-network 195.2.8.64 0.0.0.31 area 0
-network 195.2.8.96 0.0.0.7 area 0
-network 150.7.20.192 0.0.0.3 area 0
-passive-interface g0/1
+network 170.15.3.160 0.0.0.15 area 0
+network 170.15.3.128 0.0.0.31 area 0
+network 170.15.3.176 0.0.0.7 area 0
+network 180.8.2.184 0.0.0.3 area 0
+passive-interface g0/0
 
 end
 
 ! ===========================
-! ======== RFrontera ========
+! ======== RHospital ========
 ! ===========================
 
 ena
 config t
-hostname RFrontera
+hostname RHospital
 
 no ip domain-lookup
 service password-encryption 
 
 enable secret class
 
-ip dhcp excluded-address 205.40.20.1
-ip dhcp excluded-address 195.2.8.1
-ip dhcp excluded-address 195.2.8.65
-ip dhcp excluded-address 195.2.8.94
+ip dhcp excluded-address 170.15.3.161
+ip dhcp excluded-address 170.15.3.174
+ip dhcp excluded-address 170.15.3.129
+ip dhcp excluded-address 160.8.1.1
 
-ip dhcp pool Visitantes
-network 205.40.20.0 255.255.255.240
-dns-server 130.4.5.8
-default-router 205.40.20.1
+ip dhcp pool Pacientes
+network 160.8.1.0 255.255.255.128
+dns-server 9.9.9.9
+default-router 160.8.1.1
 
-ip dhcp pool VLAN500
-network 195.2.8.64 255.255.255.224
-dns-server 130.4.5.8
-default-router 195.2.8.65
+ip dhcp pool VLAN70
+network 170.15.3.160 255.255.255.240
+dns-server 9.9.9.9
+default-router 170.15.3.161
 
-ip dhcp pool VLAN800
-network 195.2.8.0 255.255.255.192
-dns-server 130.4.5.8
-default-router 195.2.8.1
+ip dhcp pool VLAN90
+network 170.15.3.128 255.255.255.224
+dns-server 9.9.9.9
+default-router 170.15.3.129
 
 banner motd # Unauthorized access is strictly prohibited.# 
 
@@ -107,41 +108,41 @@ password cisco
 login
 exit
 
-int g0/0
-desc Enlace con Visitantes
-ip address 205.40.20.1 255.255.255.240
-no shut
-
-int s0/0/0
-desc Enlace con RCohaus
-ip address 150.7.20.193 255.255.255.252
-clock rate 128000
+int g0/1
+desc Enlace con Pacientes
+ip address 160.8.1.1 255.255.255.128
 no shut
 
 int s0/0/1
+desc Enlace con RPersonal
+ip address 180.8.2.186 255.255.255.252
+no shut
+
+int s0/0/0
 desc Enlace con ISP
-ip address 210.32.1.65 255.255.255.252
+ip address 205.0.1.241 255.255.255.252
+clock rate 128000
 no shut
 
 ! Establecer una ruta por default que se encargue de sacar el tráfico a Internet
-ip route 0.0.0.0 0.0.0.0 s0/0/1
+ip route 0.0.0.0 0.0.0.0 s0/0/0
 
 router ospf 2024
-network 205.40.20.0 0.0.0.15 area 0
-network 150.7.20.192 0.0.0.3 area 0
-passive-interface s0/0/1
-passive-interface g0/0
+network 180.8.2.184 0.0.0.3 area 0
+network 160.8.1.0 0.0.0.127 area 0
+passive-interface g0/1
+passive-interface s0/0/0
 default-information originate
 
 end
 
 ! ====================
-! ===== SCohaus ======
+! ===== SPersonal ====
 ! ====================
 
 ena
 conf t
-hostname SCohaus
+hostname SPersonal
 
 no ip domain-lookup
 service password-encryption 
@@ -161,16 +162,16 @@ login
 exit
 
 ! Creación de la base de datos de las VLANs
-vlan 500
-name Administradores
+vlan 70
+name Administrativos
 exit
 
-vlan 800
-name Usuarios
+vlan 90
+name Medicos
 exit
 
 ! Definición de puertos trunk
-int g0/1
+int g0/2
 switchport mode trunk
 no shut
 exit
@@ -189,11 +190,11 @@ exit
 
 int vlan 1
 description VLAN administrativa
-ip address 195.2.8.98 255.255.255.248
+ip address 170.15.3.179 255.255.255.248
 no shut
 exit
 
-ip default-gateway 195.2.8.97
+ip default-gateway 170.15.3.177
 
 end
 
@@ -224,23 +225,23 @@ login
 exit
 
 ! Creación de la base de datos de las VLANs
-vlan 500
-name Administradores
+vlan 70
+name Administrativos
 exit
 
-vlan 800
-name Usuarios
+vlan 90
+name Medicos
 exit
 
 ! Definición de los puertos de acceso
-int range f0/2-8
+int range f0/2-10
 switchport mode access
-switchport access vlan 500
+switchport access vlan 70
 exit
 
-int range f0/9-24
+int range f0/11-24
 switchport mode access
-switchport access vlan 800
+switchport access vlan 90
 exit
 
 ! Definición de los puertos troncales
@@ -254,11 +255,11 @@ exit
 
 int vlan 1
 description VLAN administrativa
-ip address 195.2.8.99 255.255.255.248
+ip address 170.15.3.180 255.255.255.248
 no shut
 exit
 
-ip default-gateway 195.2.8.97
+ip default-gateway 170.15.3.177
 
 end
 
@@ -288,23 +289,23 @@ login
 exit
 
 ! Creación de la base de datos de las VLANs
-vlan 500
-name Administradores
+vlan 70
+name Administrativos
 exit
 
-vlan 800
-name Usuarios
+vlan 90
+name Medicos
 exit
 
 ! Definición de los puertos de acceso
-int range f0/2-8
+int range f0/2-10
 switchport mode access
-switchport access vlan 500
+switchport access vlan 70
 exit
 
-int range f0/9-24
+int range f0/11-24
 switchport mode access
-switchport access vlan 800
+switchport access vlan 90
 exit
 
 ! Definición de los puertos troncales
@@ -318,11 +319,11 @@ exit
 
 int vlan 1
 description VLAN administrativa
-ip address 195.2.8.100 255.255.255.248
+ip address 170.15.3.181 255.255.255.248
 no shut
 exit
 
-ip default-gateway 195.2.8.97
+ip default-gateway 170.15.3.177
 
 end
 
@@ -347,25 +348,21 @@ line vty 0 4
 password cisco
 login
 
-int Lo0
-ip address 1.1.1.1 255.0.0.0
-
 interface GigabitEthernet0/0
-ip address 23.192.157.1 255.255.255.0
+ip address 104.0.0.1 255.0.0.0
 no shutdown
 
 interface GigabitEthernet0/1
-ip address 130.4.0.1 255.255.0.0
+ip address 9.0.0.1 255.0.0.0
 no shutdown
 
-interface Serial0/0/0
-ip address 210.32.1.66 255.255.255.252
-clock rate 128000
+interface Serial0/0/1
+ip address 205.0.1.242 255.255.255.252
 no shutdown
 
-ip route 195.2.8.0 255.255.255.192 Serial0/0/0 
-ip route 195.2.8.64 255.255.255.224 Serial0/0/0 
-ip route 195.2.8.96 255.255.255.248 Serial0/0/0 
-ip route 205.40.20.0 255.255.255.240 Serial0/0/0 
-
+ip route 170.15.3.128 255.255.255.224 Serial0/0/1 
+ip route 170.15.3.160 255.255.255.240 Serial0/0/1
+ip route 170.15.3.176 255.255.255.248 Serial0/0/1
+ip route 160.8.1.0 255.255.255.128 Serial0/0/1
+ 
 end

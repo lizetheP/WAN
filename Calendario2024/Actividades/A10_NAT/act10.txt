@@ -1,9 +1,6 @@
 --------- MyISP --------
 Ya configurado
 
-! Rutas estáticas hacia las redes de la empresa
-
- 
 ! Ruta estática del next-hop hacia RMabe con la red pública asignada
 
 

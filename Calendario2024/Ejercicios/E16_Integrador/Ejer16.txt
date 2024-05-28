@@ -200,9 +200,6 @@ exit
 
 ! Ya configurado
 
-! Configuración de rutas estáticas hacia las redes de la empresa
-
-
 ! Configuración de ruta estática hacia RB con el 
 ! rango de direcciones de la red pública asignada
 

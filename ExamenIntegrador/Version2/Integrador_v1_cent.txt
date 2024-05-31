@@ -23,42 +23,43 @@ password cisco
 login
 exit
 
-int s0/0/1
+int s0/1/0
 desc Enlace con RHospital
-ip address 192.168.4.34 255.255.255.252
+ip address 172.25.0.161 255.255.255.252
+clock rate 128000
 no shut
 
 ! Declaración de subinterfaces.
 
 ! Nativa VLAN 1
-int g0/1.1
+int g0/0.1
 description VLAN Nativa
 encapsulation dot1Q 1
-ip address 10.8.20.97 255.255.255.252
+ip address 172.30.0.73 255.255.255.252
 
-! Administrativos VLAN 500
-int g0/1.500
-description VLAN Administrativos
-encapsulation dot1Q 500
-ip address 10.8.20.65 255.255.255.224
-ip helper-address 192.168.4.33
-
-! Medicos 600
-int g0/1.600
+! Medicos VLAN 700
+int g0/0.700
 description VLAN Medicos
-encapsulation dot1Q 600
-ip address 10.8.20.1 255.255.255.192
-ip helper-address 192.168.4.33
+encapsulation dot1Q 700
+ip address 172.30.0.49 255.255.255.248
+ip helper-address 172.25.0.162
 
-int g0/1
+! Medicos 800
+int g0/0.800
+description VLAN Enfermeras
+encapsulation dot1Q 800
+ip address 172.30.0.1 255.255.255.240
+ip helper-address 172.25.0.162
+
+int g0/0
 no shut
 
 router ospf 1
-network 10.8.20.96 0.0.0.3 area 0
-network 10.8.20.64 0.0.0.31 area 0
-network 10.8.20.0 0.0.0.63 area 0
-network 192.168.4.32 0.0.0.3 area 0
-passive-interface g0/1
+network 172.30.0.72 0.0.0.3 area 0
+network 172.30.0.48 0.0.0.7 area 0
+network 172.30.0.0 0.0.0.15 area 0
+network 172.25.0.160 0.0.0.3 area 0
+passive-interface g0/0
 
 end
 
@@ -75,25 +76,25 @@ service password-encryption
 
 enable secret class
 
-ip dhcp excluded-address 10.8.20.94
-ip dhcp excluded-address 10.8.20.65
-ip dhcp excluded-address 10.8.20.1
-ip dhcp excluded-address 172.31.4.14
+ip dhcp excluded-address 172.30.0.49
+ip dhcp excluded-address 172.30.0.1
+ip dhcp excluded-address 172.30.0.54
+ip dhcp excluded-address 192.168.0.126
 
 ip dhcp pool Pacientes
-network 172.31.4.0 255.255.255.240
-dns-server 4.4.4.4
-default-router 172.31.4.14
+network 192.168.0.64 255.255.255.192
+dns-server 7.7.7.7
+default-router 192.168.0.126
 
-ip dhcp pool VLAN500
-network 10.8.20.64 255.255.255.224
-dns-server 4.4.4.4
-default-router 10.8.20.65
+ip dhcp pool VLAN700
+network 172.30.0.48 255.255.255.248
+dns-server 7.7.7.7
+default-router 172.30.0.49
 
-ip dhcp pool VLAN600
-network 10.8.20.0 255.255.255.192
-dns-server 4.4.4.4
-default-router 10.8.20.1
+ip dhcp pool VLAN800
+network 172.30.0.0 255.255.255.240
+dns-server 7.7.7.7
+default-router 172.30.0.1
 
 banner motd # Unauthorized access is strictly prohibited.# 
 
@@ -107,33 +108,32 @@ password cisco
 login
 exit
 
-int g0/0
+int g0/1
 desc Enlace con Pacientes
-ip address 172.31.4.14 255.255.255.240
+ip address 192.168.0.126 255.255.255.192
 ip nat inside
 no shut
 
-int s0/0/1
+int s0/0/0
 desc Enlace con ISP
-ip address 70.9.30.130 255.255.255.252
+ip address 199.2.0.193 255.255.255.252
 ip nat outside
 no shut
 
-int s0/0/0
+int s0/0/1
 desc Enlace con RPersonal
-ip address 192.168.4.33 255.255.255.252
-clock rate 128000
+ip address 172.25.0.162 255.255.255.252
 ip nat inside
 no shut
 
 ! Establecer una ruta por default que se encargue de sacar el tráfico a Internet
-ip route 0.0.0.0 0.0.0.0 s0/0/1
+ip route 0.0.0.0 0.0.0.0 s0/0/0
 
 router ospf 1
-network 192.168.4.32 0.0.0.3 area 0
-network 172.31.4.0 0.0.0.15 area 0
-passive-interface g0/0
-passive-interface s0/0/1
+network 172.25.0.160 0.0.0.3 area 0
+network 192.168.0.64 0.0.0.63 area 0
+passive-interface g0/1
+passive-interface s0/0/0
 default-information originate
 
 !NAT
@@ -141,23 +141,23 @@ default-information originate
 !Traduccion dinamica uno a uno, por cada direccion IP privada 
 !se asignara una direccion IP publica.
 
-ip nat pool MyPool 140.95.1.225 140.95.1.231 netmask 255.255.255.248
+ip nat pool MyPool 25.4.70.193 25.4.70.223 netmask 255.255.255.224
 ip nat inside source list 1 pool MyPool
 access-list 1 permit any
 
 ! Traduccion estatica
 !--------------------------------
-ip nat inside source static 10.8.20.94 140.95.1.224
+ip nat inside source static 172.30.0.54 25.4.70.192
 
 end
 
 ! ====================
-! ===== SPersonal ====
+! ===== SCetral ====
 ! ====================
 
 ena
 conf t
-hostname SPersonal
+hostname SCentral
 
 no ip domain-lookup
 service password-encryption 
@@ -177,16 +177,16 @@ login
 exit
 
 ! Creación de la base de datos de las VLANs
-vlan 500
-name Administrativos
-exit
-
-vlan 600
+vlan 700
 name Medicos
 exit
 
+vlan 800
+name Enfermeras
+exit
+
 ! Definición de puertos trunk
-int g0/1
+int g0/2
 switchport mode trunk
 no shut
 exit
@@ -205,11 +205,11 @@ exit
 
 int vlan 1
 description VLAN administrativa
-ip address 10.8.20.98 255.255.255.252
+ip address 172.30.0.74 255.255.255.252
 no shut
 exit
 
-ip default-gateway 10.8.20.97
+ip default-gateway 172.30.0.73
 
 end
 
@@ -240,23 +240,23 @@ login
 exit
 
 ! Creación de la base de datos de las VLANs
-vlan 500
-name Administrativos
-exit
-
-vlan 600
+vlan 700
 name Medicos
 exit
 
-! Definición de los puertos de acceso
-int range f0/2-7
-switchport mode access
-switchport access vlan 500
+vlan 800
+name Enfermeras
 exit
 
-int range f0/8-20
+! Definición de los puertos de acceso
+int range f0/2-11
 switchport mode access
-switchport access vlan 600
+switchport access vlan 700
+exit
+
+int range f0/12-24
+switchport mode access
+switchport access vlan 800
 exit
 
 ! Definición de los puertos troncales
@@ -294,23 +294,23 @@ login
 exit
 
 ! Creación de la base de datos de las VLANs
-vlan 500
-name Administrativos
-exit
-
-vlan 600
+vlan 700
 name Medicos
 exit
 
-! Definición de los puertos de acceso
-int range f0/2-7
-switchport mode access
-switchport access vlan 500
+vlan 800
+name Enfermeras
 exit
 
-int range f0/8-20
+! Definición de los puertos de acceso
+int range f0/2-11
 switchport mode access
-switchport access vlan 600
+switchport access vlan 700
+exit
+
+int range f0/12-24
+switchport mode access
+switchport access vlan 800
 exit
 
 ! Definición de los puertos troncales
@@ -321,7 +321,6 @@ no shut
 exit
 
 end
-
 ! ===========================
 ! ======== ISP ==========
 ! ===========================
@@ -344,16 +343,42 @@ password cisco
 login
 
 interface GigabitEthernet0/0
-ip address 104.0.0.1 255.0.0.0
+ip address 207.231.204.1 255.255.255.0
 no shutdown
 
 interface GigabitEthernet0/1
-ip address 4.0.0.1 255.0.0.0
+ip address 7.0.0.1 255.0.0.0
 no shutdown
 
-interface Serial0/0/0
-ip address 70.9.30.129 255.255.255.252
+interface Serial0/0/1
+ip address 199.2.0.194 255.255.255.252
 clock rate 128000
 no shutdown
 
-ip route 140.95.1.224 255.255.255.248 Serial0/0/0
+ip route 25.4.70.192 255.255.255.224 Serial0/0/1
+
+
+! Lista de acceso
+!--------------------------------
+! Lista de acceso extendida que impida que los equipos de la VLAN de Enfermeras
+! accedan al servidor webmed.com via web (http). El puerto de http es 80.
+
+!RPersonal
+access-list 100 deny tcp 172.30.0.0 0.0.0.15 host 207.231.204.56 eq 80
+access-list 100 permit ip any any
+
+int g0/0.800
+ip access-group 100 in
+
+
+Lista de acceso para que los pacientes no puedan acceder al servidor www.medicos.com via ftp
+!RHospital
+access-list 105 deny tcp 172.31.4.0 0.0.0.15 host 10.8.20.94 eq 20
+access-list 105 deny tcp 172.31.4.0 0.0.0.15 host 10.8.20.94 eq 21
+access-list 105 permit ip any any
+
+int g0/0
+ip access-group 105 in
+
+no ip route 140.95.1.224 255.255.255.248 Serial0/0/0 
+no ip route 140.95.1.224 255.255.255.248 70.9.30.130

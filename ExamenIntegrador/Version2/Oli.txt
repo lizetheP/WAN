@@ -1,0 +1,3 @@
+Oli
+* Ruta por default no correcta.
+* NAT interfaces inside y outside no correcta.

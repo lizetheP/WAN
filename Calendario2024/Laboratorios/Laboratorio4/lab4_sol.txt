@@ -44,6 +44,10 @@ ip nat inside source list 1 interface serial 0/1/1 overload
 
 ip nat inside source static tcp 192.168.1.2 23 209.165.201.18 65001
 
+!No funcionó ftp
+!ip nat inside source static tcp 192.168.1.20 20 209.165.201.18 65002
+!ip nat inside source static tcp 192.168.1.20 21 209.165.201.18 65003
+
 !--------------------------------------
 !--------- ISP ------------------------
 !--------------------------------------
@@ -77,10 +81,6 @@ no shut
 int s0/1/0
 ip address 209.165.201.17 255.255.255.252
 clock rate 64000
-no shut
-
-int g0/0/0
-ip address 10.0.0.1 255.0.0.0
 no shut
 
 ip route 209.165.200.224 255.255.255.248 209.165.201.18

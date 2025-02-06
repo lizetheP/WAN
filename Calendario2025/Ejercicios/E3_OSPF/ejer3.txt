@@ -1,0 +1,93 @@
+---------------------------------------------
+ROUTER R1
+---------------------------------------------
+en
+config t
+
+hostname R1
+
+service password-encryption
+no ip domain-lookup
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 4
+password cisco
+login
+
+banner motd # Solo acceso autorizado #
+
+interface GigabitEthernet0/0
+description Enlace a LAN Amarilla
+ip address 192.168.1.1 255.255.255.0
+no shut
+
+---------------------------------------------
+ROUTER R2
+---------------------------------------------
+en
+config t
+
+hostname R2
+
+service password-encryption
+no ip domain-lookup
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 4
+password cisco
+login
+
+banner motd # Solo acceso autorizado #
+
+interface GigabitEthernet0/0
+description Enlace a LAN Verde
+ip address 192.168.2.1 255.255.255.0
+no shut
+
+---------------------------------------------
+ROUTER R3
+---------------------------------------------
+
+en
+config t
+
+hostname R3
+
+service password-encryption
+no ip domain-lookup
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 4
+password cisco
+login
+
+banner motd # Solo acceso autorizado #
+
+interface GigabitEthernet0/0
+description Enlace a LAN Rosa
+ip address 192.168.3.1 255.255.255.0
+no shut
+
+---------------------------------------------
+ISP
+---------------------------------------------
+
+! Rutas estáticas hacia las redes de la empresa

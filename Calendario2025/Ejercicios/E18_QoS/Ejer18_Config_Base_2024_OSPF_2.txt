@@ -1,0 +1,201 @@
+-------------------------------------------------
+Ruteador INGENIERIA
+-------------------------------------------------
+en
+config t
+
+hostname INGENIERIA
+
+enable secret class
+
+class-map match-any CRITICO
+match protocol ospf
+match protocol telnet
+match protocol ssh
+exit
+
+class-map match-any MEDIO
+match protocol smtp
+match protocol pop3
+match protocol ftp
+exit
+
+class-map match-any BAJO
+match protocol http
+match protocol dns
+match protocol icmp
+exit
+
+policy-map POLITICAS
+class CRITICO
+set precedence 7
+class MEDIO
+set precedence 5
+class BAJO
+set precedence 3
+exit
+
+interface GigabitEthernet0/1
+ip address 192.168.20.1 255.255.255.128
+no shut
+exit
+
+interface Serial0/0/1
+ip address 10.1.1.1 255.255.255.252
+service-policy output POLITICAS
+no shut
+exit
+
+router ospf 1
+passive-interface GigabitEthernet0/1
+network 192.168.20.0 0.0.0.127 area 0
+network 10.1.1.0 0.0.0.3 area 0
+exit
+
+line vty 0 4
+password cisco
+login
+exit
+
+end
+
+-------------------------------------------------
+Ruteador CENTRAL
+-------------------------------------------------
+en
+config t
+
+hostname CENTRAL
+
+enable secret class
+
+class-map match-any CRITICO
+match protocol ospf
+match protocol telnet
+match protocol ssh
+exit
+
+class-map match-any MEDIO
+match protocol smtp
+match protocol pop3
+match protocol ftp
+exit
+
+class-map match-any BAJO
+match protocol http
+match protocol dns
+match protocol icmp
+exit
+
+policy-map POLITICAS
+class CRITICO
+set precedence 7
+class MEDIO
+set precedence 5
+class BAJO
+set precedence 3
+exit
+
+interface GigabitEthernet0/0
+ip address 192.168.40.1 255.255.255.224
+service-policy input POLITICAS
+no shut
+exit
+
+interface GigabitEthernet0/1
+ip address 192.168.30.1 255.255.255.240
+service-policy input POLITICAS
+no shut
+exit
+
+interface Serial0/0/0
+ip address 10.2.2.2 255.255.255.252
+clock rate 128000
+service-policy output POLITICAS
+no shut
+exit
+
+interface Serial0/0/1
+ip address 10.1.1.2 255.255.255.252
+clock rate 128000
+service-policy output POLITICAS
+no shut
+exit
+
+router ospf 1
+passive-interface GigabitEthernet0/0
+passive-interface GigabitEthernet0/1
+network 10.1.1.0 0.0.0.3 area 0
+network 10.2.2.0 0.0.0.3 area 0
+network 192.168.40.0 0.0.0.31 area 0
+network 192.168.30.0 0.0.0.15 area 0
+exit
+
+line vty 0 4
+password cisco
+login
+exit
+
+
+end
+-------------------------------------------------
+Ruteador LICENCIATURA
+-------------------------------------------------
+en
+config t
+
+hostname LICENCIATURA
+
+enable secret class
+
+class-map match-any CRITICO
+match protocol ospf
+match protocol telnet
+match protocol ssh
+exit
+
+class-map match-any MEDIO
+match protocol smtp
+match protocol pop3
+match protocol ftp
+exit
+
+class-map match-any BAJO
+match protocol http
+match protocol dns
+match protocol icmp
+exit
+
+policy-map POLITICAS
+class CRITICO
+set precedence 7
+class MEDIO
+set precedence 5
+class BAJO
+set precedence 3
+exit
+
+interface GigabitEthernet0/1
+ip address 192.168.10.1 255.255.255.128
+no shut
+exit
+
+interface Serial0/0/0
+ip address 10.2.2.1 255.255.255.252
+service-policy output POLITICAS
+no shut
+exit
+
+router ospf 1
+passive-interface GigabitEthernet0/1
+network 192.168.10.0 0.0.0.127 area 0
+network 10.2.2.0 0.0.0.3 area 0
+exit
+
+line vty 0 4
+password cisco
+login
+exit
+
+
+end

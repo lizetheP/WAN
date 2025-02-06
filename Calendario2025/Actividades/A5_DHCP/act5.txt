@@ -1,0 +1,105 @@
+---------------------------
+Configuración R1
+---------------------------
+en
+config t
+
+hostname R1
+
+enable password class
+
+no ip domain-lookup
+
+! Servicio de DHCP
+
+
+interface Loopback0
+ip address 2.2.2.2 255.255.255.248
+
+interface S0/0/1
+ip address 50.87.6.34 255.255.255.252
+desc Enlace con ISP
+no shut
+
+banner motd # Prohibido entrar a este router sin autorizacion !!! #
+
+line con 0
+password cisco
+login
+logging synchronous
+exit
+
+line vty 0 4
+password cisco
+login
+logging synchronous
+exit
+
+! Ruta por default hacia el ISP
+
+---------------------------
+Configuración S1
+---------------------------
+en
+config t
+
+hostname S1
+
+enable password class
+
+no ip domain-lookup
+
+banner motd # Prohibido entrar a este switch sin autorizacion #
+
+line con 0
+password cisco
+logging synchronous
+login
+exit
+
+line vty 0 15
+password cisco
+login
+exit
+
+! Configurar la IP del switch
+
+
+end
+
+---------------------------
+Configuración S2
+---------------------------
+en
+config t
+
+hostname S2
+
+enable password class
+
+no ip domain-lookup
+
+banner motd # Prohibido entrar a este switch sin autorizacion #
+
+line con 0
+password cisco
+logging synchronous
+login
+exit
+
+line vty 0 15
+password cisco
+login
+exit
+
+! Configurar la IP del switch
+
+
+end
+
+---------------------------
+Configuración ISP
+---------------------------
+
+! Rutas estáticas hacia las redes de la empresa
+

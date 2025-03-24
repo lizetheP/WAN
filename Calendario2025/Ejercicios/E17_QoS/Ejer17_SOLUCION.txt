@@ -1,0 +1,121 @@
+---------------------------------------
+Router 1
+---------------------------------------
+en
+config t
+
+hostname R1
+
+interface FastEthernet0/0
+ip address 10.1.1.1 255.255.255.0
+service-policy input DEMO
+no shut
+exit
+
+interface s0/0/0
+ip address 10.2.2.1 255.255.255.0
+service-policy output PRIORIDADES
+clock rate 128000
+no shut
+exit
+
+router ospf 1
+network 10.1.1.0 0.0.0.255 area 0
+network 10.2.2.0 0.0.0.255 area 0
+exit
+
+!--------- QoS -------------------------
+! Parte 1: Aplicar técnicas de clasificación y marcado en el 
+! ruteador R1 para darles mayor prioridad a los paquetes que 
+! salgan de la PC1.
+!1. Configurar el tráfico INTERESANTE
+!------------------------------------
+ 
+class-map match-all INTERESANTE
+match access-group 1
+exit
+
+access-list 1 permit host 10.1.1.100
+
+!2. Configurar el mapa de políticas
+!------------------------------------
+policy-map DEMO
+class INTERESANTE
+set precedence 5
+
+101000
+
+class-map match-all PRIORIDAD5
+
+!3. Aplicar este mapa de políticas
+!------------------------------------
+
+int fa0/0
+service-policy input DEMO
+exit
+
+! Parte 2: Aplicar priorización de tráfico en el ruteador R1
+!1. Configurar el tráfico PRIORIDAD5
+!------------------------------------
+
+class-map PRIORIDAD5
+match precedence 5
+exit
+
+!2. Configurar el mapa de políticas
+!-----------------------------------
+! Si te llegas a encontrar tráfico con precedencia 5 asígnale 
+! 1000 kbps y en forma prioritaria. 
+
+policy-map PRIORIDADES
+class PRIORIDAD5
+priority 1000
+
+! La clase default asígnale el ancho de banda que se divida
+! equitativamente.
+
+class class-default
+fair-queue
+
+!3. Aplicar este mapa de políticas 
+!-----------------------------------
+! Vamos a aplicar esta política a la interfaz fa0/1 de salida
+
+int f0/1
+service-policy output PRIORIDADES
+
+
+
+end
+
+---------------------------------------
+Router 2
+---------------------------------------
+en
+config t
+
+hostname R2
+
+class-map match-all PRIORIDAD5
+match precedence 5
+
+policy-map PRIORIDADES
+class PRIORIDAD5
+priority 1000
+
+interface FastEthernet0/0
+ip address 10.3.3.1 255.255.255.0
+service-policy output PRIORIDADES
+no shut
+exit
+
+interface Serial0/0/0
+ip address 10.2.2.2 255.255.255.0
+no shut
+exit
+
+router ospf 1
+network 0.0.0.0 255.255.255.255 area 0
+exit
+
+end

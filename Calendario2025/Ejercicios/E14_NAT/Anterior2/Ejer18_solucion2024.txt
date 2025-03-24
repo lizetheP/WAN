@@ -1,0 +1,179 @@
+!---------------------------------------------------------------
+!Router A
+!---------------------------------------------------------------
+en
+config t
+
+hostname RA
+
+interface G0/1
+ip address 10.0.1.254 255.255.254.0
+ip helper-address 10.0.3.129
+no shut
+exit
+
+!Para completar el protocolo de instalación del DHCP 1centralizado
+!Configure RA as a DHCP relay agent (AGENTE DE RETRANSMISIÓN !DE DHCP)
+!El router RA va a contactar al RB por alguna de sus 3 interfaces 
+!(go/1, s0/1/0 o s0/1/1)
+
+!interface g0/1
+!ip helper-address 10.0.3.129
+! Para resolver la problemática de que el router A no tiene el DHCP, pero 
+! alguién más sí lo tiene y lo voy a poder contactar por alguna de sus tres 
+! interfaces del router B.
+! CON ESTO EL ROUTER A CONTACTA AL ROUTER B PARA QUE LE ENTREGUE DIRECCIONES IP
+! DINÁMICAS A TODOS LOS EQUIPOS DE LA SUBRED 10.0.0.0
+!exit
+
+interface Serial0/1/0
+ip address 10.0.3.130 255.255.255.252
+clock rate 128000
+no shut
+exit
+
+router ospf 1
+passive-interface GigabitEthernet0/1
+network 10.0.0.0 0.0.1.255 area 0
+network 10.0.3.128 0.0.0.3 area 0
+exit
+
+int g0/1
+ip nat inside
+exit
+
+int s0/1/0
+ip nat inside
+exit
+
+!---------------------------------------------------------------
+!Router B
+!---------------------------------------------------------------
+en
+config t
+
+hostname RB
+
+interface G0/1
+ip address 10.0.7.254 255.255.252.0
+no shut
+exit
+
+interface Serial0/1/0
+ip address 65.10.8.66 255.255.255.224
+no shut
+exit
+
+interface Serial0/1/1
+ip address 10.0.3.129 255.255.255.252
+no shut
+exit
+
+!DHCP
+!----------------
+! DIRECCIONES EXCLUIDAS DE LAS INTERFACES PUERTAS DE ENLACE PREDERTMINADAS
+ip dhcp excluded-address 10.0.1.253 10.0.1.254
+ip dhcp excluded-address 10.0.7.254
+
+! DHCP para la subred RB_G0/1
+ip dhcp pool RB_G0/1
+network 10.0.4.0 255.255.252.0 
+!1024 direcciones disponibles - 2 y una ya
+! esta ocupada por el gateway.
+default-router 10.0.7.254
+dns-server 5.5.5.5
+exit
+
+! DHCP para la subred RA_G0/1
+ip dhcp pool RA_G0/1
+network 10.0.0.0 255.255.254.0
+default-router 10.0.1.254
+dns-server 5.5.5.5
+exit
+
+ip route 0.0.0.0 0.0.0.0 65.10.8.65
+
+router ospf 1
+passive-interface GigabitEthernet0/1
+passive-interface Serial0/1/0
+network 10.0.3.128 0.0.0.3 area 0
+network 10.0.4.0 0.0.3.255 area 0
+default-information originate
+exit
+
+!255.255.255.255
+!255.255.252.0
+!---------------
+!0.0.3.255
+
+!NAT
+!----------------------------------------------------------------
+!Traduccion dinamica uno a uno, por cada direccion IP privada 
+!se asignara una direccion IP publica.
+
+ip nat pool MyPool 170.15.9.34 170.15.9.63 netmask 255.255.255.224
+ip nat inside source list 10 pool MyPool
+access-list 10 permit any
+
+! Traduccion estatica
+!--------------------------------
+ip nat inside source static 10.0.1.253 170.15.9.33
+
+int g0/1
+ip nat inside
+exit
+
+int s0/1/1
+ip nat inside
+exit
+
+int s0/1/0
+ip nat outside
+exit
+!Interfaces de conexion con el exterior
+
+
+!PAT
+!------------------------------
+!Traduccion dinamica de muchas direcciones IPs privadas contra 
+!una o pocas direcciones IP publicas para salir al exterior.
+
+ip nat inside source list 10 pool MyPool overload
+
+!---------------------------------------------------------------
+!ISP
+!---------------------------------------------------------------
+en
+config t
+
+hostname ISP-ALESTRA
+
+service password-encryption
+
+enable secret class
+
+interface G0/0
+ip address 52.84.150.1 255.255.255.0
+no shut
+
+interface G0/1
+ip address 5.0.0.1 255.0.0.0
+no shut
+
+interface Serial0/0/0
+ip address 65.10.8.65 255.255.255.224
+clock rate 128000
+no shut
+
+ip route 170.15.9.32 255.255.255.224 65.10.8.66
+ip route 0.0.0.0 0.0.0.0 s0/0/0
+
+o
+
+ip route 10.0.0.0 255.255.254.0 s0/0/0
+ip route 10.0.4.0 255.255.252.0 s0/0/0
+
+
+line con 0
+password cisco
+login

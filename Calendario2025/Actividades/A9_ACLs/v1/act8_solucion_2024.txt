@@ -1,0 +1,43 @@
+------------------------------------------------------------
+LISTAS DE ACCESO ESTÁNDAR
+------------------------------------------------------------
+Ejercicio 1.
+------------------------------------------------------------
+Impida que subred de Alumnos tengan acceso a la subred de la VLAN de Servidores
+
+Router A
+access-list 15 deny 132.254.89.0 0.0.0.127
+access-list 15 permit any
+
+int g0/0.20
+ip access-group 15 out
+
+------------------------------------------------------------
+LISTAS DE ACCESO EXTENDIDA
+------------------------------------------------------------
+------------------------------------------------------------
+Ejercicio 2.
+------------------------------------------------------------
+Impida que las computadoras de la subred de Alumnos y Profesores tengan acceso externo a los servicios de WEB del servidor Facebook.com. El resto de las direcciones IP pueden acceder sin restricción a todos los servicios de Internet incluyendo todo el tráfico que no sea WEB y se dirija al servidor de Facebook.com. 
+
+Router B
+access-list 115 deny tcp 132.254.89.0 0.0.0.127 host 65.0.1.10 eq 80
+access-list 115 deny tcp 132.254.89.232 0.0.0.7 host 65.0.1.10 eq 80
+access-list 115 permit ip any any 
+
+int s0/0/0
+ip access-group 115 out
+
+----------------------------------------------------------------------
+Router B
+access-list 115 deny tcp 132.254.89.0 0.0.0.127 host 65.0.1.10 eq 80
+access-list 115 permit ip any any
+
+int g0/1
+ip access-group 115 in
+
+access-list 120 deny tcp 132.254.89.232 0.0.0.7 host 65.0.1.10 eq 80
+access-list 120 permit ip any any 
+
+int g0/0
+ip access-group 120 in

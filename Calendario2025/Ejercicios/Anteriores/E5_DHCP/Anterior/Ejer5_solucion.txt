@@ -1,0 +1,123 @@
+---------------------------
+Configuración R1
+---------------------------
+en
+config t
+
+hostname R1
+
+enable password class
+
+no ip domain-lookup
+
+ip dhcp excluded-address 200.10.5.61 200.10.5.62
+ip dhcp excluded-address 200.10.5.69 200.10.5.70
+
+ip dhcp pool EmpleadosG0/0
+network 200.10.5.0 255.255.255.192
+default-router 200.10.5.62
+exit
+
+ip dhcp pool DirectivosG0/1
+network 200.10.5.64 255.255.255.248
+default-router 200.10.5.70
+exit
+
+interface Loopback0
+ip address 2.2.2.2 255.255.255.248
+no shut
+exit
+
+interface GigabitEthernet0/0
+ip address 200.10.5.62 255.255.255.192
+no shut
+exit
+
+interface GigabitEthernet0/1
+ip address 200.10.5.70 255.255.255.248
+no shut
+exit
+
+banner motd # Prohibido entrar a este router sin autorizacin !!! #
+
+line con 0
+password cisco
+logging synchronous
+login
+exit
+
+line vty 0 4
+password cisco
+login
+exit
+
+end
+---------------------------
+Configuración S1
+---------------------------
+en
+config t
+
+hostname S1
+
+enable password class
+
+no ip domain-lookup
+
+interface vlan 1
+description VLAN administrativa
+ip address 200.10.5.61 255.255.255.192
+no shut
+exit
+
+ip default-gateway 200.10.5.62
+
+banner motd # Prohibido entrar a este switch sin autorizacion #
+
+line con 0
+password cisco
+logging synchronous
+login
+exit
+
+line vty 0 15
+password cisco
+login
+exit
+
+end
+
+---------------------------
+Configuración S2
+---------------------------
+en
+config t
+
+hostname S2
+
+enable password class
+
+no ip domain-lookup
+
+interface vlan 1
+description VLAN administrativa
+ip address 200.10.5.69 255.255.255.248
+no shut
+exit
+
+ip default-gateway 200.10.5.70
+
+banner motd # Prohibido entrar a este switch sin autorizacion #
+
+line con 0
+password cisco
+logging synchronous
+login
+exit
+
+line vty 0 15
+password cisco
+login
+exit
+
+end

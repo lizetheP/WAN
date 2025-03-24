@@ -1,0 +1,159 @@
+--------------------------
+router GAMMA
+--------------------------
+en
+config t
+
+router ospf 8
+network 10.21.0.0 0.0.15.255 area 0
+network 10.21.52.128 0.0.0.31 area 0
+passive-interface g0/0/1
+
+---------------------------
+router ETA
+---------------------------
+en
+config t
+
+router ospf 8
+network 10.21.52.184 0.0.0.3 area 0
+network 10.21.52.188 0.0.0.3 area 0
+
+---------------------------
+router SIGMA
+---------------------------
+en
+config t
+
+router ospf 8
+network 10.21.52.176 0.0.0.7 area 0
+network 10.21.32.0 0.0.7.255 area 0
+network 10.21.16.0 0.0.15.255 area 0
+passive-interface g0/0/1
+
+---------------------------------------------
+CONFIGURE SWITCH MULTICAPA
+---------------------------------------------
+SWITCH TAU
+---------------------------------------------
+en
+config t
+
+int f0/3
+no switchport
+ip address 10.21.52.179 255.255.255.248
+
+vlan 70
+exit
+
+vlan 80
+exit
+
+vlan 90
+exit
+
+int vlan 70
+ip address 10.21.48.1 255.255.252.0
+exit
+
+int vlan 80
+ip address 10.21.44.1 255.255.252.0
+exit
+
+int vlan 90
+ip address 10.21.40.1 255.255.252.0
+exit
+
+int g0/1
+switchport mode trunk
+exit
+
+int g0/2
+switchport mode trunk
+exit
+
+router ospf 8
+network 10.21.48.0 0.0.3.255 area 0
+network 10.21.44.0 0.0.3.255 area 0
+network 10.21.40.0 0.0.3.255 area 0
+network 10.21.52.176 0.0.0.7 area 0
+passive-interface g0/1
+passive-interface g0/2
+
+---------------------------------------------
+SWITCH IOTA
+---------------------------------------------
+en
+config t
+
+vlan 70
+exit
+
+vlan 80
+exit
+
+vlan 90
+exit
+
+int f0/1
+switchport mode trunk
+switchport trunk encapsulation dot1q
+exit
+
+int f0/2
+switchport mode trunk
+switchport trunk encapsulation dot1q
+exit
+
+int fa0/3
+switchport mode access
+switchport access vlan 70
+exit
+
+int fa0/4
+switchport mode access
+switchport access vlan 80
+exit
+
+int fa0/5
+switchport mode access
+switchport access vlan 90
+exit
+
+---------------------------------------------
+SWITCH PSI
+---------------------------------------------
+en
+config t
+
+vlan 70
+exit
+
+vlan 80
+exit
+
+vlan 90
+exit
+
+int f0/1
+switchport mode trunk
+exit
+
+int f0/3
+switchport mode trunk
+exit
+
+int fa0/5
+switchport mode access
+switchport access vlan 70
+exit
+
+int fa0/2
+switchport mode access
+switchport access vlan 80
+exit
+
+int fa0/4
+switchport mode access
+switchport access vlan 90
+exit

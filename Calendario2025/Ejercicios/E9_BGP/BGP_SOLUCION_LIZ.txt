@@ -1,0 +1,109 @@
+----------------------------
+Router R1
+----------------------------
+
+en
+config t
+
+hostname R1
+
+interface Loopback0
+ip address 1.1.1.1 255.255.255.0
+no shut
+exit
+
+interface GigabitEthernet0/0
+ip address 100.0.0.2 255.255.255.252
+no shut
+exit
+
+interface GigabitEthernet0/1
+ip address 10.0.12.1 255.255.255.252
+no shut
+exit
+
+interface GigabitEthernet0/2
+ip address 10.0.13.1 255.255.255.252
+no shut
+exit
+
+ip route 0.0.0.0 0.0.0.0 100.0.0.1
+
+router ospf 1
+network 10.0.12.0 0.0.0.3 area 0
+network 10.0.13.0 0.0.0.3 area 0
+network 1.1.1.0 0.0.0.255 area 0
+passive-interface GigabitEthernet0/0
+default-information originate
+exit
+
+router bgp 65000
+neighbor 100.0.0.1 remote 65001
+network 1.1.1.1 mask 255.255.255.255
+network 2.2.2.2 mask 255.255.255.255
+network 3.3.3.3 mask 255.255.255.255
+!network 10.0.0.0 mask 255.255.224.0
+network 10.0.12.0 mask 255.255.255.252
+network 10.0.13.0 mask 255.255.255.252
+network 10.0.23.0 mask 255.255.255.252
+exit
+
+----------------------------
+Router R2
+----------------------------
+
+en
+config t
+
+hostname R2
+
+interface Loopback0
+ip address 2.2.2.2 255.255.255.0
+no shut
+exit
+
+interface GigabitEthernet0/0
+ip address 10.0.12.2 255.255.255.252
+no shut
+exit
+
+interface GigabitEthernet0/1
+ip address 10.0.23.1 255.255.255.252
+no shut
+exit
+
+router ospf 1
+network 10.0.23.0 0.0.0.3 area 0
+network 10.0.12.0 0.0.0.3 area 0
+network 2.2.2.0 0.0.0.255 area 0
+exit
+
+----------------------------
+Router R3
+----------------------------
+
+en
+config t
+
+hostname R3
+
+interface Loopback0
+ip address 3.3.3.3 255.255.255.0
+no shut
+exit
+
+interface GigabitEthernet0/0
+ip address 10.0.23.2 255.255.255.252
+no shut
+exit
+
+interface GigabitEthernet0/1
+ip address 10.0.13.2 255.255.255.252
+no shut
+exit
+
+router ospf 1
+network 10.0.23.0 0.0.0.3 area 0
+network 10.0.13.0 0.0.0.3 area 0
+network 3.3.3.0 0.0.0.255 area 0
+exit

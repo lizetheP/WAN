@@ -117,4 +117,4 @@ end
 ! ======== ISP ==========
 ! ===========================
 
-! Ruta estática para conectar el tráfico de Internet con la red local.
+! Rutas estáticas para conectar el tráfico de Internet con las subredes locales

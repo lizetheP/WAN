@@ -77,6 +77,9 @@ line vty 0 4
 password cisco
 login
 
+int Lo0
+ip address
+
 ! Sección para crear las subinterfaces asociadas a cada VLAN
 
 

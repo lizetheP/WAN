@@ -26,14 +26,15 @@ interface GigabitEthernet0/0
 ip address 64.100.1.1 255.255.255.0
 no shut
 
+interface GigabitEthernet0/1
+ip address 3.3.3.1 255.0.0.0
+no shut
+
 interface Serial0/0/0
 description La conexion con R2
 ip address 200.6.10.193 255.255.255.252
 clock rate 128000
 no shut
-
-int Lo0
-ip ad 3.3.3.3 255.255.255.0
 
 ! Rutas estáticas hacia las redes de la empresa
 

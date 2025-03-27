@@ -28,6 +28,8 @@ password REMOTO2020
 login
 logging sync
 
+banner motd #¡Advertencia! Solo personal autorizado.#
+
 int g0/0/1
 ip address 10.21.0.1 255.255.240.0
 no shut

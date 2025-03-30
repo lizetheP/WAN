@@ -260,8 +260,8 @@ int g0/1
 ip address 209.165.200.226 255.255.255.252
 no shut
 
-int Lo0
-ip address 9.9.9.9 255.0.0.0
+int g0/2
+ip address 9.0.0.1 255.0.0.0
 no shut
 
 ip route 192.168.99.0 255.255.255.0 G0/1

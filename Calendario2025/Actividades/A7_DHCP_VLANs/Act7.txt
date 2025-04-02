@@ -19,8 +19,9 @@ password cisco
 login
 logging sync
 
-
 ! CONFIGURAR VLANs
+
+! CONFIGURAR INTERFACES VLANs
 
 ! CONFIGURAR PUERTOS TRONCALES
 
@@ -34,6 +35,33 @@ en
 config t
 
 hostname S1
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 15
+password cisco
+login
+logging sync
+
+! CONFIGURAR VLANs
+
+! CONFIGURAR PUERTOS TRONCALES
+
+! CONFIGURAR IP Y DEFAULT-GATEWAY
+
+! ===========================
+! ======= Switch S2 ========
+! ===========================
+
+en
+config t
+
+hostname S2
 
 enable password class
 
@@ -97,17 +125,13 @@ no shut
 
 ! Ruta por default hacia el ISP
 
+! CONFIGURAR OSPF
 
 ! ===========================
 ! ======== ISP ==========
 ! ===========================
 
 ! Rutas estaticas hacia las redes de la empresa
-
-
-
-
-
 
 
 

@@ -50,8 +50,8 @@ ip route 0.0.0.0 0.0.0.0 s0/1/0
 
 router ospf 1
 network 65.255.255.252 0.0.0.3 area 0
-network 192.168.2.0 0.0.0.3 area 0
-network 192.168.3.0 0.0.0.3 area 0
+network 192.168.2.0 0.0.0.255 area 0
+network 192.168.3.0 0.0.0.255 area 0
 passive-interface s0/1/0
 passive-interface g0/0
 passive-interface g0/1
@@ -89,7 +89,7 @@ desc Interfaz que conecta con RF
 ip address 65.255.255.253 255.255.255.252
 no shut
 
-! Declaración de subinterfaces.
+! Declaracion de subinterfaces.
 
 ! Administrative VLAN 1
 int g0/0.1
@@ -151,7 +151,7 @@ password cisco
 login
 exit
 
-! Creación de la base de datos de las VLANs
+! Creacion de la base de datos de las VLANs
 vlan 10
 name Manager
 exit
@@ -164,9 +164,9 @@ vlan 30
 name Services
 exit
 
-! Definición de puertos trunk
+! Definicion de puertos trunk
 
-! Configuración IP
+! Configuracion IP
 
 int vlan 1
 no shut
@@ -200,7 +200,7 @@ password cisco
 login
 exit
 
-! Creación de la base de datos de las VLANs
+! Creacion de la base de datos de las VLANs
 vlan 10
 name Manager
 exit
@@ -213,7 +213,7 @@ vlan 30
 name Services
 exit
 
-! Definición de los puertos de acceso
+! Definicion de los puertos de acceso
 int range f0/2-6
 switchport mode access
 switchport access vlan 10
@@ -229,7 +229,7 @@ switchport mode access
 switchport access vlan 30
 exit
 
-! Definición de los puertos troncales
+! Definicion de los puertos troncales
 
 int f0/1
 switchport mode trunk

@@ -76,13 +76,21 @@ password cisco
 login
 exit
 
+! Declaración de subinterfaces.
 
-interface GigabitEthernet0/0
+! Servidores VLAN 30
+
+int g0/1.30
+description VLAN Profesores
+encapsulation dot1Q 30
 ip address 132.254.89.237 255.255.255.248
-no shut
 
-interface GigabitEthernet0/1
+int g0/1.40
+description VLAN Alumnos
+encapsulation dot1Q 40
 ip address 132.254.89.126 255.255.255.128
+
+int g0/1
 no shut
 
 interface Serial0/0/0
@@ -94,23 +102,27 @@ ip address 132.254.89.242 255.255.255.252
 clock rate 128000
 no shut
 
+ip route 0.0.0.0 0.0.0.0 Serial0/0/0
+
 router ospf 1
-network 132.254.89.232 0.0.0.7 area 0
 network 132.254.89.0 0.0.0.127 area 0
 network 132.254.89.240 0.0.0.3 area 0
-passive-interface g0/0
-default-information originate
-
-ip route 0.0.0.0 0.0.0.0 Serial0/0/0 
-
+network 132.254.89.232 0.0.0.7 area 0
+passive-interface g0/1
+passive-interface s0/0/0
+default-information originate 
 
 ! ===========================
-! ======== Switch4 ==========
+! =========== SA ============
 ! ===========================
+
 ena
 conf t
 
+hostname SA
+
 ! Creación de la base de datos de las VLANs
+
 vlan 10
 name Directores
 exit
@@ -125,46 +137,50 @@ switchport mode trunk
 no shut
 exit
 
-int fa0/1
-switchport mode trunk
-no shut
+! Definición de los puertos de acceso
+int range f0/1-9
+switchport mode access
+switchport access vlan 10
 exit
 
-int fa0/2
-switchport mode trunk
-no shut
+int range f0/10-20
+switchport mode access
+switchport access vlan 20
 exit
 
-! ======== Switch5 y 6 ==========
+
+! ===========================
+! =========== SB ============
 ! ===========================
 ena
 conf t
 
+hostname SB
+
 ! Creación de la base de datos de las VLANs
-vlan 10
-name Directores
+vlan 30
+name Profesores
 exit
 
-vlan 20
-name Servidores
+vlan 40
+name Alumnos
 exit
 
 ! Definición de puertos trunk
-
-int fa0/1
+int g0/1
 switchport mode trunk
 no shut
 exit
 
 ! Definición de los puertos de acceso
-int range f0/2-8
+int range f0/1-9
 switchport mode access
-switchport access vlan 10
+switchport access vlan 30
 exit
 
-int range f0/9-24
+int range f0/10-20
 switchport mode access
-switchport access vlan 20
+switchport access vlan 40
 exit
 
 ! ===========================

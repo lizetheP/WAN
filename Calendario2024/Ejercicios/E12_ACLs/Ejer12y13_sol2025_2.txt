@@ -1,0 +1,149 @@
+Mejores prácticas para el diseño de ACLs EXTENDIDA
+1. Identificar la fuente (tráfico fuente) y el destino
+2. Trazar el trayecto del tráfico no permitido. 
+3. Trazar el trayecto del tráfico permitido. 
+4. Identificar el router donde se instalará la lista de control de acceso.
+5. Identificar la interfaz donde se va a asociar la lista de control de acceso.
+6. Escribir la ACL, instalarla y probarla.
+   NOTA: Realizar pruebas de conectividad antes y después de instalar una ACL
+
+REGLA:
+LAS LISTAS DE ACCESO EXTENDIDAS SE DEBEN INSTALAR LO MAS CERCA DEL
+ORIGEN. PARA EVITAR QUE EL TRÁFICO LLEGUE A LUGARES DONDE NO 
+NECESITE LLEGAR.
+ 
+!------------------------------------------------------------
+!Ejercicio 0
+!------------------------------------------------------------
+
+0. Diseña una lista de control de acceso extendida para impedir que las computadoras de la subred de Alumnos tengan acceso a la subred de Directivos.
+
+¿En qué router instalarás esta lista de control de acceso? 
+router(config)#
+router(config)#
+router(config)# interface 
+router(config-if)#
+
+!RouterB
+access-list 100 remark Impedir Alumnos acceso a Directivos
+access-list 100 deny ip 132.254.89.0 0.0.0.127 132.254.89.192 0.0.0.31
+access-list 100 permit ip any any
+
+int g0/1.40
+ip access-group 100 in
+
+int g0/1.40
+no ip access-group 100 in
+
+!------------------------------------------------------------
+!Ejercicio 1
+!------------------------------------------------------------
+
+1. Diseña una lista de control de acceso extendida para impedir que las computadoras de las subredes de Alumnos y Profesores tengan acceso a la subred de Directores.
+
+¿En qué router instalarás esta lista de control de acceso? 
+
+!RouterB
+access-list 101 remark Impedir Profesores y Alumnos acceso a Directivos
+access-list 101 deny ip 132.254.89.0 0.0.0.127 132.254.89.192 0.0.0.31
+access-list 101 deny ip 132.254.89.232 0.0.0.7 132.254.89.192 0.0.0.31
+access-list 101 permit ip any any
+
+int s0/0/1
+ip access-group 101 out
+
+int s0/0/1
+no ip access-group 101 out
+
+
+!------------------------------------------------------------
+!Ejercicio 2
+!------------------------------------------------------------
+
+2. Diseña una lista de control de acceso extendida para que el visitante 1 no pueda acceder a la subred de Servidores
+
+!RouterB
+access-list 102 remark Impedir visitante 1 acceso a Servidores
+access-list 102 deny ip host 132.254.89.120 132.254.89.128 0.0.0.63
+access-list 102 permit ip any any
+
+int g0/1.40
+ip access-group 102 in
+
+int g0/1.40
+no ip access-group 102 in
+
+
+!------------------------------------------------------------
+!Ejercicio 3
+!------------------------------------------------------------
+
+3. Diseña una lista de control de acceso extendida para impedir que las computadoras de los Alumnos tengan acceso a la subred de Directores y Profesores.
+
+!RouterB
+access-list 103 remark Impedir Alumnos acceso a Directores y Profesores
+access-list 103 deny ip 132.254.89.0 0.0.0.127 132.254.89.192 0.0.0.31
+access-list 103 deny ip 132.254.89.0 0.0.0.127 132.254.89.232 0.0.0.7
+access-list 103 permit ip any any
+
+int g0/1.40
+ip access-group 103 in
+
+int g0/1.40
+no ip access-group 103 in
+
+
+!------------------------------------------------------------
+!Ejercicio 4
+!------------------------------------------------------------
+
+4. Diseña una lista de control de acceso extendida para impedir que las computadoras de la subred de Profesores tengan acceso al servidor de Directivos.
+
+!RouterB
+access-list 104 remark Impedir Profesores acceso a server Directores
+access-list 104 deny ip 132.254.89.232 0.0.0.7 host 132.254.89.221
+access-list 104 permit ip any any
+
+int g0/1.30
+ip access-group 104 in
+
+int g0/1.30
+no ip access-group 104 in
+
+!------------------------------------------------------------
+!Ejercicio 5
+!------------------------------------------------------------
+
+5. Diseña una lista de control de acceso extendida para que la sección de Alumnos no pueda acceder al servidor de profesores vía el protocolo WEB ni por FTP.
+
+!Router B
+access-list 105 deny tcp 132.254.89.0 0.0.0.127 host 132.254.89.238 eq 20
+access-list 105 deny tcp 132.254.89.0 0.0.0.127 host 132.254.89.238 eq 21 
+access-list 105 deny tcp 132.254.89.0 0.0.0.127 host 132.254.89.238 eq 80
+access-list 105 permit ip any any 
+
+int g0/1.40
+ip access-group 105 in
+
+int g0/1.40
+no ip access-group 105 in
+
+------------------------------------------------------------
+Ejercicio 6
+------------------------------------------------------------
+
+6. Diseña una lista de control de acceso extendida para que ninguna 
+dirección IP interna de nuestra red pueda acceder al servidor 
+dnsserver vía el protocolo WEB. 
+
+!Router B
+access-list 106 deny tcp any host 1.1.1.1 eq 80
+access-list 106 permit ip any any 
+
+int s0/0/0
+ip access-group 106 out
+
+
+int s0/0/0
+no ip access-group 106 out
+

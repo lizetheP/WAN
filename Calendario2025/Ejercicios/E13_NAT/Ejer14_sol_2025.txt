@@ -111,13 +111,13 @@ exit
 !Traduccion dinamica uno a uno, por cada direccion IP privada 
 !se asignara una direccion IP publica.
 
-ip nat pool MyPool 170.15.9.34 170.15.9.63 netmask 255.255.255.224
+ip nat pool MyPool 170.15.9.33 170.15.9.63 netmask 255.255.255.224
 ip nat inside source list 10 pool MyPool
 access-list 10 permit any
 
 ! Traduccion estatica
 !--------------------------------
-ip nat inside source static 10.0.1.253 170.15.9.33
+ip nat inside source static 10.0.1.253 170.15.9.32
 
 int g0/1
 ip nat inside
@@ -132,7 +132,6 @@ ip nat outside
 exit
 !Interfaces de conexion con el exterior
 
-
 !PAT
 !------------------------------
 !Traduccion dinamica de muchas direcciones IPs privadas contra 
@@ -146,14 +145,14 @@ ip nat inside source list 10 pool MyPool overload
 en
 config t
 
-hostname ISP-ALESTRA
+hostname ISP
 
 service password-encryption
 
 enable secret class
 
 interface G0/0
-ip address 52.84.150.1 255.255.255.0
+ip address 20.0.0.1 255.0.0.0
 no shut
 
 interface G0/1
@@ -166,14 +165,8 @@ clock rate 128000
 no shut
 
 ip route 170.15.9.32 255.255.255.224 65.10.8.66
-ip route 0.0.0.0 0.0.0.0 s0/0/0
-
-o
-
-ip route 10.0.0.0 255.255.254.0 s0/0/0
-ip route 10.0.4.0 255.255.252.0 s0/0/0
-
 
 line con 0
 password cisco
 login
+

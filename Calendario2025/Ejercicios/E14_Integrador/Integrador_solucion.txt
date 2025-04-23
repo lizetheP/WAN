@@ -369,7 +369,7 @@ service password-encryption
 enable secret class
 
 interface G0/0
-ip address 52.84.150.1 255.255.255.0
+ip address 20.0.0.1 255.0.0.0
 no shut
 
 interface G0/1
@@ -381,9 +381,6 @@ ip address 65.10.8.65 255.255.255.224
 clock rate 128000
 no shut
 
-ip route 10.0.2.0 255.255.255.224 Serial0/0/0 
-ip route 10.0.3.0 255.255.255.240 Serial0/0/0 
-ip route 10.0.1.0 255.255.255.248 Serial0/0/0 
-ip route 10.0.4.0 255.255.252.0 Serial0/0/0 
-
 ip route 180.15.2.128 255.255.255.128 s0/0/0
+
+no ip route 180.15.2.128 255.255.255.128 Serial0/0/0 

@@ -177,13 +177,6 @@ exit
 
 ! Configuración de DHCP centralizado
 
-ip dhcp excluded-address 10.0.7.254
-
-ip dhcp pool RB
-network 10.0.4.0 255.255.252.0 
-default-router 10.0.7.254
-dns-server 5.5.5.5
-exit
 
 ! Configuración de NAT estático
 

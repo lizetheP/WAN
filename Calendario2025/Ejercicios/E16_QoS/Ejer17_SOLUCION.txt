@@ -31,11 +31,13 @@ exit
 !1. Configurar el tráfico INTERESANTE
 !------------------------------------
  
+
+
+access-list 1 permit host 10.1.1.100
+
 class-map match-all INTERESANTE
 match access-group 1
 exit
-
-access-list 1 permit host 10.1.1.100
 
 !2. Configurar el mapa de políticas
 !------------------------------------
@@ -79,9 +81,9 @@ fair-queue
 
 !3. Aplicar este mapa de políticas 
 !-----------------------------------
-! Vamos a aplicar esta política a la interfaz fa0/1 de salida
+! Vamos a aplicar esta política a la interfaz s0/0/0 de salida
 
-int f0/1
+int s0/0/0
 service-policy output PRIORIDADES
 
 

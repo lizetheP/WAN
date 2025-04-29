@@ -24,6 +24,8 @@ line vty 0 4
 password cisco
 login
 
+ip route 0.0.0.0 0.0.0.0 s0/1/1
+
 int g0/0/1
 ip address 192.168.1.1 255.255.255.0
 no shut
@@ -35,6 +37,14 @@ no shut
 ! PAT
 !------------------------------------------------------------- 
 
+access-list 1 permit 192.168.1.0 0.0.0.255
+ip nat inside source list 1 interface serial 0/1/1 overload
+
+int g0/0/1
+ip nat inside
+
+int s0/1/1
+ip nat outside
 
 !-------------------------------------------------------------
 ! ISP

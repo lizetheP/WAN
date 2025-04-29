@@ -1,0 +1,51 @@
+!-----------------------------------------------------------------------------------
+! PASOS PARA CONFIGURAR QoS
+!-----------------------------------------------------------------------------------
+! 1. Configurar los tipos de tráfico (class-map)
+! 2. Configurar las acciones a realizar con este tipo de tráfico (policy-map)
+! 3. Aplicar las políticas de acciones a una interface del ruteador (service-policy)
+!-----------------------------------------------------------------------------------
+
+!---------------------------------------------------------------
+! 1. Identificar los tipos de tráfico a los que se desea aplicar 
+!    un tratamiento especial. (class-map)
+!---------------------------------------------------------------
+
+class-map HTTPS_MAP
+match protocol https
+
+class-map HTTP_MAP
+match protocol http
+
+class-map ICMP_MAP
+match protocol icmp
+
+!-------------------------------------------------------------
+! 2. Especificar qué tipo de tratamiento le vamos a dar a cada 
+!    tipo de tráfico (policy-map)
+!-------------------------------------------------------------
+
+policy-map g0/0/0_out
+
+class HTTPS_MAP
+set ip dscp AF31
+priority percent 10
+
+class HTTP_MAP
+set ip dscp AF32
+bandwidth percent 10
+
+class ICMP_MAP
+set ip dscp cs2
+bandwidth percent 5
+
+!-----------------------------------------------------------------------
+! 3. Aplicar las políticas a una interface del ruteador (service-policy)
+!-----------------------------------------------------------------------
+
+int g0/0/0
+service-policy output g0/0/0_out
+
+
+
+

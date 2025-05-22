@@ -1,0 +1,82 @@
+!-------------------------------------------------------------------------------
+! Mejores prácticas para el diseño de listas de control de acceso “Extendidas”
+!-------------------------------------------------------------------------------
+! 1. Identificar la fuente/origen (tráfico fuente) y el destino.
+! 2. Trazar el trayecto del tráfico NO permitido. 
+! 3. Trazar el trayecto del tráfico permitido. 
+! 4. Identificar el router donde se instalará la lista de control de acceso.
+! 5. Identificar la interfaz donde se va a asociar la lista de control de acceso.
+! 6. Escribir la ACL, instalarla y probarla.
+
+! NOTA: Realizar pruebas de conectividad antes y después de instalar una ACL
+
+REGLA: LAS LISTAS DE CONTROL DE ACCESO EXTENDIDAS SE DEBEN INSTALAR LO MAS CERCA DEL ORIGEN, PARA EVITAR QUE EL TRÁFICO LLEGUE A LUGARES DONDE NO SE NECESITE LLEGAR.
+
+!-------------------------------
+! Ejercicio 1
+!-------------------------------
+
+Diseña una lista de control de acceso extendida para impedir que las computadoras de la subredes de Profesores y Alumnos tengan acceso a la subred de Directores.
+
+!-------------------------------
+! Ejercicio 2
+!-------------------------------
+
+Diseña una lista de control de acceso extendida para que el visitante 1 no pueda acceder a la 
+subred de Servidores
+
+!-------------------------------
+! Ejercicio 3
+!-------------------------------
+
+Diseña una lista de control de acceso extendida para impedir que las computadoras de la subred de 
+Profesores tengan acceso al servidor de Directivos
+
+!-------------------------------
+! Ejercicio 4
+!-------------------------------
+
+Diseña una lista de control de acceso extendida que únicamente permita el acceso al servidor de Finanzas desde cualquier IP asociada con la subred de los Directores pero que impida el acceso a este servidor desde otras direcciones IP. Permite el resto del tráfico. En esta ocasión el servidor de Finanzas al no permitir ningún tipo de tráfico desde direcciones diferentes de Directores dará la impresión de que no existe. 
+
+!-------------------------------
+! Ejercicio 5
+!-------------------------------
+
+Diseña una lista de control de acceso extendida para que la sección de Alumnos 
+no pueda acceder al servidor de profesores vía el protocolo WEB ni por FTP.
+
+!-------------------------------
+! Ejercicio 6
+!-------------------------------
+Diseña una lista de control de acceso extendida para que ninguna dirección IP interna de 
+nuestra red pueda acceder al servidor dnsserver.com vía el protocolo WEB. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

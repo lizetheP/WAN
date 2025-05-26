@@ -40,6 +40,18 @@ interface Serial0/1/1
 ip address 10.0.3.129 255.255.255.252
 no shut
 
+! DHCP
+
+ip dhcp excluded-address 
+
+ip dhcp pool
+network
+default-router
+dns-server 
+
+! Ruta por default
+
+
 router ospf 1
 passive-interface GigabitEthernet0/1
 passive-interface Serial0/1/0

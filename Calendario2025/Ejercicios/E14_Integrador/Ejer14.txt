@@ -158,7 +158,7 @@ no shut
 exit
 
 interface Serial0/1/0
-ip address 65.10.8.66 255.255.255.224
+ip address 65.10.8.66 255.255.255.252
 no shut
 exit
 

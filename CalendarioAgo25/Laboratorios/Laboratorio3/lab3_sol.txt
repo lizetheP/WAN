@@ -1,0 +1,116 @@
+!----------------------------
+!--------- Gateway ----------
+!----------------------------
+
+en
+config t
+
+hostname Gateway
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+
+int g0/0/1
+ip address 192.168.1.1 255.255.255.0
+ip nat inside
+no shut
+
+int s0/1/1
+ip address 209.165.201.18 255.255.255.252
+ip nat outside
+no shut
+
+ip route 0.0.0.0 0.0.0.0 s0/1/1
+
+access-list 1 permit 192.168.1.0 0.0.0.255
+no ip nat pool public_access 209.165.200.225 209.165.200.231 netmask 255.255.255.248
+no ip nat inside source list 1 pool public_access overload
+
+ip nat inside source list 1 interface serial 0/1/1 overload
+
+ip nat inside source static tcp 192.168.1.2 23 209.165.201.18 65001
+
+!--------------------------------------
+!--------- ISP ------------------------
+!--------------------------------------
+
+en
+config t
+
+hostname ISP
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+
+int Lo0
+ip address 192.31.7.1 255.255.255.255
+no shut
+
+int s0/1/0
+ip address 209.165.201.17 255.255.255.252
+clock rate 64000
+no shut
+
+int g0/0/0
+ip address 10.0.0.1 255.0.0.0
+no shut
+
+ip route 209.165.200.224 255.255.255.248 209.165.201.18
+!ip route 192.168.1.0 255.255.255.0 s0/1/0
+
+
+!--------------------------
+!--------- S1 -------------
+!--------------------------
+
+en
+config t
+
+hostname S1
+
+enable secret class
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 15
+password cisco
+login
+
+int vlan 1
+ip address 192.168.1.2 255.255.255.0
+no shut
+
+ip default-Gateway 192.168.1.1
+
+end

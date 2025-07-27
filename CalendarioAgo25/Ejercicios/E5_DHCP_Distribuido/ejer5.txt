@@ -1,0 +1,146 @@
+---------------------------------------------
+ISP
+---------------------------------------------
+
+! Rutas estáticas hacia las redes de la empresa Bosch
+
+
+---------------------------------------------
+ROUTER R1
+---------------------------------------------
+en
+config t
+
+hostname R1
+
+service password-encryption
+no ip domain-lookup
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 4
+password cisco
+login
+
+banner motd # Solo acceso autorizado #
+
+interface GigabitEthernet0/0
+description Enlace a Red Amarilla
+ip address 192.168.1.1 255.255.255.0
+no shut
+
+interface Serial0/0/0
+description Enlace a RF
+ip address 192.168.12.1 255.255.255.252
+clock rate 128000
+no shut
+
+router ospf 1
+network 192.168.1.0 0.0.0.255 area 0
+network 192.168.12.0 0.0.0.3 area 0
+passive-interface g0/0
+
+
+
+---------------------------------------------
+ROUTER RF
+---------------------------------------------
+en
+config t
+
+hostname RF
+
+service password-encryption
+no ip domain-lookup
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 4
+password cisco
+login
+
+banner motd # Solo acceso autorizado #
+
+interface GigabitEthernet0/0
+description Enlace a Red Verde
+ip address 192.168.2.1 255.255.255.0
+no shut
+
+interface Serial0/0/0
+description Enlace a R1
+ip address 192.168.12.2 255.255.255.252
+no shut
+
+interface Serial0/0/1
+description Enlace a R2
+ip address 192.168.23.1 255.255.255.252
+clock rate 128000
+no shut
+
+interface Serial0/1/0
+description Enlace a ISP
+ip address 200.6.10.194 255.255.255.224
+no shut
+
+! Ruta por default hacia el ISP
+
+
+router ospf 1
+network 192.168.2.0 0.0.0.255 area 0
+network 192.168.12.0 0.0.0.3 area 0
+network 192.168.23.0 0.0.0.3 area 0
+passive-interface g0/0
+passive-interface s0/1/0
+default-information originate
+
+
+---------------------------------------------
+ROUTER R2
+---------------------------------------------
+
+en
+config t
+
+hostname R2
+
+service password-encryption
+no ip domain-lookup
+
+enable password class
+
+line con 0
+password cisco
+logging synchronous
+login
+
+line vty 0 4
+password cisco
+login
+
+banner motd # Solo acceso autorizado #
+
+interface GigabitEthernet0/0
+description Enlace a Red Rosa
+ip address 192.168.3.1 255.255.255.0
+no shut
+
+interface Serial0/0/1
+description Enlace a RF
+ip address 192.168.23.2 255.255.255.252
+no shut
+
+router ospf 1
+network 192.168.3.0 0.0.0.255 area 0
+network 192.168.23.0 0.0.0.3 area 0
+passive-interface g0/0
+

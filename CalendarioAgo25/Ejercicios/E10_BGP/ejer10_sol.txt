@@ -1,0 +1,11 @@
+!ACME1
+!--------------
+router bgp 65001
+neighbor 1.1.1.1 remote-as 65003
+network 192.168.0.0 mask 255.255.255.0
+
+!OTHER COMPANY
+!--------------
+router bgp 65002
+neighbor 1.1.1.9 remote-as 65003
+network 172.16.10.0 mask 255.255.255.0

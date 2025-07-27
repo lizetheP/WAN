@@ -1,0 +1,97 @@
+!----------------------------
+!--------- Gateway ----------
+!----------------------------
+
+en
+config t
+
+hostname Gateway
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+
+int g0/0/1
+ip address 192.168.1.1 255.255.255.0
+no shut
+
+int s0/1/1
+ip address 209.165.201.18 255.255.255.252
+no shut
+
+!--------------------------------------
+!--------- ISP ------------------------
+!--------------------------------------
+
+en
+config t
+
+hostname ISP
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+
+int Lo0
+ip address 192.31.7.1 255.255.255.255
+no shut
+
+int s0/1/0
+ip address 209.165.201.17 255.255.255.252
+clock rate 64000
+no shut
+
+!--------------------------
+!--------- S1 -------------
+!--------------------------
+
+en
+config t
+
+hostname S1
+
+enable secret class
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 15
+password cisco
+login
+
+int vlan 1
+ip address 192.168.1.2 255.255.255.0
+no shut
+
+ip default-Gateway 192.168.1.1
+
+end
+

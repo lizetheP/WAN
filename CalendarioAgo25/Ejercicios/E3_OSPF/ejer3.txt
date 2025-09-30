@@ -13,16 +13,17 @@ enable password class
 
 line con 0
 password cisco
-logging synchronous
 login
+logging synchronous
 
 line vty 0 4
 password cisco
 login
+logging synchronous
 
 banner motd # Solo acceso autorizado #
 
-interface GigabitEthernet0/0
+interface G0/0
 description Enlace a LAN Amarilla
 ip address 192.168.1.1 255.255.255.0
 no shut
@@ -42,16 +43,17 @@ enable password class
 
 line con 0
 password cisco
-logging synchronous
 login
+logging synchronous
 
 line vty 0 4
 password cisco
 login
+logging synchronous
 
 banner motd # Solo acceso autorizado #
 
-interface GigabitEthernet0/0
+interface G0/0
 description Enlace a LAN Verde
 ip address 192.168.2.1 255.255.255.0
 no shut
@@ -72,16 +74,17 @@ enable password class
 
 line con 0
 password cisco
-logging synchronous
 login
+logging synchronous
 
 line vty 0 4
 password cisco
 login
+logging synchronous
 
 banner motd # Solo acceso autorizado #
 
-interface GigabitEthernet0/0
+interface G0/0
 description Enlace a LAN Rosa
 ip address 192.168.3.1 255.255.255.0
 no shut

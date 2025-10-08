@@ -11,13 +11,13 @@ enable password class
 
 line con 0
 password cisco
-logging synchronous
 login
+logging synchronous
 
 line vty 0 15
 password cisco
 login
-logging sync
+logging synchronous
 
 ! CONFIGURAR VLANs
 
@@ -40,13 +40,13 @@ enable password class
 
 line con 0
 password cisco
-logging synchronous
 login
+logging synchronous
 
 line vty 0 15
 password cisco
 login
-logging sync
+logging synchronous
 
 ! CONFIGURAR VLANs
 
@@ -67,13 +67,13 @@ enable password class
 
 line con 0
 password cisco
-logging synchronous
 login
+logging synchronous
 
 line vty 0 15
 password cisco
 login
-logging sync
+logging synchronous
 
 ! CONFIGURAR VLANs
 
@@ -99,12 +99,13 @@ enable password class
 
 line con 0
 password cisco
-logging synchronous
 login
+logging synchronous
 
 line vty 0 4
 password cisco
 login
+logging synchronous
 
 banner motd # Solo acceso autorizado #
 
@@ -132,7 +133,5 @@ no shut
 ! ===========================
 
 ! Rutas estaticas hacia las redes de la empresa
-
-
 
 

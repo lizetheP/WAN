@@ -10,6 +10,18 @@ enable password class
 
 no ip domain-lookup
 
+banner motd # Prohibido entrar a este router sin autorizacion !!! #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+logging synchronous
+
 ! Servicio de DHCP
 
 
@@ -20,20 +32,6 @@ interface S0/0/1
 ip address 50.87.6.34 255.255.255.252
 desc Enlace con ISP
 no shut
-
-banner motd # Prohibido entrar a este router sin autorizacion !!! #
-
-line con 0
-password cisco
-login
-logging synchronous
-exit
-
-line vty 0 4
-password cisco
-login
-logging synchronous
-exit
 
 ! Ruta por default hacia el ISP
 
@@ -53,14 +51,13 @@ banner motd # Prohibido entrar a este switch sin autorizacion #
 
 line con 0
 password cisco
-logging synchronous
 login
-exit
+logging synchronous
 
 line vty 0 15
 password cisco
 login
-exit
+logging synchronous
 
 ! Configurar la IP del switch
 
@@ -83,14 +80,13 @@ banner motd # Prohibido entrar a este switch sin autorizacion #
 
 line con 0
 password cisco
-logging synchronous
 login
-exit
+logging synchronous
 
 line vty 0 15
 password cisco
 login
-exit
+logging synchronous
 
 ! Configurar la IP del switch
 

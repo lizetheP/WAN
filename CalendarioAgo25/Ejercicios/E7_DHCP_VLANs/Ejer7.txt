@@ -8,38 +8,40 @@ config t
 hostname RF
 
 service password-encryption
+
 no ip domain-lookup
 
 enable password class
 
 line con 0
 password cisco
-logging synchronous
 login
+logging synchronous
 
 line vty 0 4
 password cisco
 login
+logging synchronous
 
 banner motd # Solo acceso autorizado #
 
-interface GigabitEthernet0/0
+interface G0/0
 description Enlace a Red Azul
 ip address 192.168.2.1 255.255.255.0
 no shut
 
-interface GigabitEthernet0/1
+interface G0/1
 description Enlace a Red Morada
 ip address 192.168.3.1 255.255.255.0
 no shut
 
-interface Serial0/0/0
+interface S0/0/0
 description Enlace a RCompany
 ip address 65.255.255.254 255.255.255.252
 clock rate 128000
 no shut
 
-interface Serial0/1/0
+interface S0/1/0
 description Enlace a ISP
 ip address 200.6.10.194 255.255.255.224
 no shut
@@ -68,6 +70,7 @@ config t
 hostname RCompany
 
 no ip domain-lookup
+
 service password-encryption 
 
 enable secret class
@@ -82,7 +85,7 @@ logging synchronous
 line vty 0 4 
 password cisco 
 login
-exit
+logging synchronous 
 
 int s0/0/1
 desc Interfaz que conecta con RF
@@ -135,6 +138,7 @@ conf t
 hostname SCompany
 
 no ip domain-lookup
+
 service password-encryption 
 
 enable secret class
@@ -149,9 +153,10 @@ logging synchronous
 line vty 0 15 
 password cisco 
 login
-exit
+logging synchronous 
 
 ! Creacion de la base de datos de las VLANs
+
 vlan 10
 name Manager
 exit
@@ -184,6 +189,7 @@ conf t
 hostname SOeste
 
 no ip domain-lookup
+
 service password-encryption 
 
 enable secret class
@@ -198,9 +204,10 @@ logging synchronous
 line vty 0 15 
 password cisco 
 login
-exit
+logging synchronous 
 
 ! Creacion de la base de datos de las VLANs
+
 vlan 10
 name Manager
 exit
@@ -214,25 +221,21 @@ name Services
 exit
 
 ! Definicion de los puertos de acceso
+
 int range f0/2-6
 switchport mode access
 switchport access vlan 10
-exit
 
 int range f0/7-19
 switchport mode access
 switchport access vlan 20
-exit
 
 int range f0/20-24
 switchport mode access
 switchport access vlan 30
-exit
 
 ! Definicion de los puertos troncales
 
 int f0/1
 switchport mode trunk
 no shut
-exit
-

@@ -19,12 +19,11 @@ line con 0
 password cisco
 login
 logging synchronous
-exit
 
 line vty 0 4
 password cisco
 login
-exit
+logging synchronous
 
 !---------------------------------------------
 ! Router WEST
@@ -47,17 +46,15 @@ line con 0
 password cisco
 login
 logging synchronous
-exit
 
 line vty 0 4
 password cisco
 login
-exit
+logging synchronous
 
-interface GigabitEthernet0/0/1
+interface G0/0/1
 ip address 172.16.1.1 255.255.255.0
 no shut
-exit
 
 !---------------------------------------------
 ! Router EAST
@@ -80,14 +77,12 @@ line con 0
 password cisco
 login
 logging synchronous
-exit
 
 line vty 0 4
 password cisco
 login
-exit
+logging synchronous
 
 interface G0/0/1
 ip address 172.16.2.1 255.255.255.0
 no shut
-exit

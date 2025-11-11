@@ -21,7 +21,29 @@ Extendidas 100 - 199
 
 1. Diseña una lista de control de acceso extendida para impedir que las computadoras de la subredes de Profesores y Alumnos tengan acceso a la subred de Directores.
 
-access-list 101 remark Permitir respuestas de retorno a Profesores y alumnos
+!Se utilizan para controlar el flujo de tráfico TCP e ICMP, específicamente
+!para permitir el tráfico de retorno de conexiones iniciadas desde la red interna 
+!o bien para permitir solo respuestas ICMP, no pings de inicio. 
+
+!permit tcp: Permite el tráfico del protocolo TCP (Protocolo de Control de Transmisión).
+!permit icmp: Permite el tráfico del protocolo ICMP (Protocolo de Mensajes de Control de Internet), 
+!utilizado para diagnósticos como el ping.
+
+!established: Esta palabra clave solo permite paquetes TCP que pertenecen 
+!a una conexión que ya ha sido establecida (iniciada por alguien del lado 
+!de la red interna-protegida) y no es un intento de iniciar una nueva
+!conexión desde el exterior. 
+
+!echo-reply: Esta palabra clave restringe el tipo de tráfico ICMP permitido a solo las 
+!respuestas de eco, que son los paquetes de respuesta a una solicitud de ping. 
+!Esto permite que los pings iniciados desde la red interna reciban su respuesta, 
+!pero bloquea los intentos de ping que se originan desde el exterior 
+!(solicitudes de eco o "echo requests") a menos que se permita explícitamente. 
+
+!En resumen, estas reglas se usan comúnmente para permitir que el 
+!tráfico saliente de la red interna regrese (como las respuestas de servidores web o respuestas de ping), mientras se mantiene un nivel de seguridad al bloquear intentos de conexión o pings no solicitados provenientes de Internet. Es una configuración típica para permitir la navegación web y la conectividad básica sin exponer completamente la red interna. 
+
+access-list 101 remark Permitir respuestas de retorno a Profesores y alumnos desde Directores
 access-list 101 permit ip 132.254.89.192 0.0.0.31 any
 access-list 101 permit tcp any 132.254.89.192 0.0.0.31 established
 access-list 101 permit icmp any 132.254.89.192 0.0.0.31 echo-reply

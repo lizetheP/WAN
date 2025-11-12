@@ -58,3 +58,28 @@ passive-interface Serial0/1/0
 network 10.0.3.128 0.0.0.3 area 0
 network 10.0.4.0 0.0.3.255 area 0
 default-information originate
+
+!----------------------------------------------------------------
+! Traducción estática
+!----------------------------------------------------------------
+
+ip nat inside static 
+
+!----------------------------------------------------------------
+! NAT
+!----------------------------------------------------------------
+! Traducción dinámica de uno a uno, por cada dirección IP privada
+! se asignará una dirección IP pública.
+
+access-list
+ip nat pool
+ip nat inside source list
+
+!----------------------------------------------------------------
+! PAT
+!----------------------------------------------------------------
+! Traducción dinámica de muchas direcciones IP privadas contra
+! una o pocas direcciones IP públicas para salir al exterior.
+
+
+

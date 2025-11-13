@@ -3,7 +3,6 @@ Ya configurado
 
 ! Ruta estática del next-hop hacia RMabe con la red pública asignada
 
-
 -------- RMabe -------
 enable
 config t
@@ -21,6 +20,7 @@ logging sync
 line vty 0 4
 password cisco
 login
+logging sync
 
 enable password class
 
@@ -40,6 +40,11 @@ description SubredAmarilla
 ip address 172.31.20.30 255.255.255.224
 no shut
 
+! OSPF
+
+! NAT Estático
+
+! NAT / PAT
 
 !-------- RA ----------
 enable
@@ -58,8 +63,18 @@ logging sync
 line vty 0 4
 password cisco
 login
+logging sync
 
 enable password class
+
+! DHCP Distribuido
+
+ip dhcp excluded-address 
+
+ip dhcp pool 
+network 
+default-router
+dns-server
 
 int g0/0
 description SubredNaranja
@@ -76,3 +91,4 @@ description La conexion con RMabe
 ip address 192.168.2.250 255.255.255.252
 no shut
 
+! OSPF

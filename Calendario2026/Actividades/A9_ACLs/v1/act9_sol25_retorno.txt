@@ -1,0 +1,44 @@
+------------------------------------------------------------
+LISTAS DE ACCESO EXTENDIDA
+------------------------------------------------------------
+
+!------------------------------------------------------------
+!Ejercicio 1
+!------------------------------------------------------------
+
+Impida que las computadoras de la subred de Alumnos y Servidores tengan acceso externo a los servicios de WEB del servidor Facebook.com
+
+!Router B
+access-list 120 deny tcp 132.254.89.0 0.0.0.127 host 65.0.1.10 eq 80
+access-list 120 deny tcp 132.254.89.128 0.0.0.63 host 65.0.1.10 eq 80
+access-list 120 permit ip any any 
+
+int s0/0/0
+ip access-group 120 out
+
+------------------------------------------------------------
+Ejercicio 2
+------------------------------------------------------------
+
+Diseña una lista de control de acceso extendida para impedir que las computadoras de los Alumnos tengan acceso a la subred de Directores y Profesores.
+
+!RouterB
+access-list 110 remark Permitir respuestas de retorno a Alumnos desde Directores y Profesores
+access-list 110 permit ip 132.254.89.192 0.0.0.31 any
+access-list 110 permit ip 132.254.89.232 0.0.0.7 any
+access-list 110 permit tcp any 132.254.89.192 0.0.0.31 established
+access-list 110 permit icmp any 132.254.89.192 0.0.0.31 echo-reply
+access-list 110 permit tcp any 132.254.89.232 0.0.0.7 established
+access-list 110 permit icmp any 132.254.89.232 0.0.0.7 echo-reply
+
+access-list 110 remark Impedir Alumnos acceso a Directores y Profesores
+access-list 110 deny ip 132.254.89.0 0.0.0.127 132.254.89.192 0.0.0.31
+access-list 110 deny ip 132.254.89.0 0.0.0.127 132.254.89.232 0.0.0.7
+access-list 110 permit ip any any
+
+int g0/1.40
+ip access-group 110 in
+
+
+int g0/1.40
+no ip access-group 110 in

@@ -1,0 +1,63 @@
+----------------------------
+Router R1
+----------------------------
+en
+config t
+
+hostname R1
+
+interface Loopback0
+ip address 1.1.1.1 255.255.255.0
+no shut
+
+interface GigabitEthernet0/0
+ip address 100.0.0.2 255.255.255.252
+no shut
+
+interface GigabitEthernet0/1
+ip address 10.0.12.1 255.255.255.252
+no shut
+
+interface GigabitEthernet0/2
+ip address 10.0.13.1 255.255.255.252
+no shut
+
+----------------------------
+Router R2
+----------------------------
+en
+config t
+
+hostname R2
+
+interface Loopback0
+ip address 2.2.2.2 255.255.255.0
+no shut
+
+interface GigabitEthernet0/0
+ip address 10.0.12.2 255.255.255.252
+no shut
+
+interface GigabitEthernet0/1
+ip address 10.0.23.1 255.255.255.252
+no shut
+
+----------------------------
+Router R3
+----------------------------
+en
+config t
+
+hostname R3
+
+interface Loopback0
+ip address 3.3.3.3 255.255.255.0
+no shut
+
+interface GigabitEthernet0/0
+ip address 10.0.23.2 255.255.255.252
+no shut
+
+interface GigabitEthernet0/1
+ip address 10.0.13.2 255.255.255.252
+no shut

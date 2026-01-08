@@ -1,0 +1,8 @@
+! Configuración de NAT para la primera IP pública
+ip nat inside source list 1 interface GigabitEthernet0/0 overload
+
+! Configuración de NAT para la segunda IP pública
+ip nat inside source list 1 interface GigabitEthernet0/1 overload
+
+! Lista de acceso para definir el rango de direcciones IP internas
+access-list 1 permit <Rango_de_IPs_Internas> <Máscara_Wildcard>

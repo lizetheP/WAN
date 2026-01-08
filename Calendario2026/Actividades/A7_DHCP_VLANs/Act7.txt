@@ -1,0 +1,137 @@
+! ===========================
+! ======= Switch MLS ========
+! ===========================
+
+en
+config t
+
+hostname MLS
+
+enable password class
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 15
+password cisco
+login
+logging synchronous
+
+! CONFIGURAR VLANs
+
+! CONFIGURAR INTERFACES VLANs
+
+! CONFIGURAR PUERTOS TRONCALES
+
+! CONFIGURAR OSPF
+
+! ===========================
+! ======= Switch S1 ========
+! ===========================
+
+en
+config t
+
+hostname S1
+
+enable password class
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 15
+password cisco
+login
+logging synchronous
+
+! CONFIGURAR VLANs
+
+! CONFIGURAR PUERTOS TRONCALES
+
+! CONFIGURAR IP Y DEFAULT-GATEWAY
+
+! ===========================
+! ======= Switch S2 ========
+! ===========================
+
+en
+config t
+
+hostname S2
+
+enable password class
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 15
+password cisco
+login
+logging synchronous
+
+! CONFIGURAR VLANs
+
+! CONFIGURAR PUERTOS DE ACCESO
+
+! CONFIGURAR PUERTOS TRONCALES
+
+! CONFIGURAR IP Y DEFAULT-GATEWAY
+
+! ==================
+! ====== RF ========
+! ==================
+
+en
+config t
+
+hostname RF
+
+service password-encryption
+no ip domain-lookup
+
+enable password class
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+logging synchronous
+
+banner motd # Solo acceso autorizado #
+
+interface G0/0
+description Enlace a Red Rosa
+ip address 192.168.23.1 255.255.255.0
+no shut
+
+interface G0/1
+description Enlace a MLS
+ip address 209.165.200.226 255.255.255.252
+no shut
+
+interface Serial0/1/0
+description Enlace a ISP
+ip address 200.6.10.194 255.255.255.224
+no shut
+
+! Ruta por default hacia el ISP
+
+! CONFIGURAR OSPF
+
+! ===========================
+! ======== ISP ==========
+! ===========================
+
+! Rutas estaticas hacia las redes de la empresa
+
+

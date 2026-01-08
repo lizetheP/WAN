@@ -1,0 +1,178 @@
+! ===========================
+! ======== RA ===============
+! ===========================
+
+ena
+config t
+hostname RA
+
+no ip domain-lookup
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+int s0/0/0
+desc Enlace con RB
+ip address 132.254.89.241 255.255.255.252
+no shut
+
+! Declaración de subinterfaces.
+
+! Directores VLAN 10
+int g0/0.10
+description VLAN Directores
+encapsulation dot1Q 10
+ip address 132.254.89.222 255.255.255.224
+
+! Servidores VLAN 20
+int g0/0.20
+description VLAN Servidores
+encapsulation dot1Q 20
+ip address 132.254.89.190 255.255.255.192
+
+int g0/0
+no shut
+
+router ospf 1
+network 132.254.89.192 0.0.0.31 area 0
+network 132.254.89.128 0.0.0.63 area 0
+network 132.254.89.240 0.0.0.3 area 0
+passive-interface g0/0
+
+end
+
+! ===========================
+! ======== RB ===============
+! ===========================
+
+ena
+config t
+hostname RB
+
+no ip domain-lookup
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+
+interface GigabitEthernet0/0
+ip address 132.254.89.237 255.255.255.248
+no shut
+
+interface GigabitEthernet0/1
+ip address 132.254.89.126 255.255.255.128
+no shut
+
+interface Serial0/0/0
+ip address 132.254.89.245 255.255.255.252
+no shut
+
+interface Serial0/0/1
+ip address 132.254.89.242 255.255.255.252
+clock rate 128000
+no shut
+
+router ospf 1
+network 132.254.89.232 0.0.0.7 area 0
+network 132.254.89.0 0.0.0.127 area 0
+network 132.254.89.240 0.0.0.3 area 0
+passive-interface g0/0
+default-information originate
+
+ip route 0.0.0.0 0.0.0.0 Serial0/0/0 
+
+
+! ===========================
+! ======== Switch4 ==========
+! ===========================
+ena
+conf t
+
+! Creación de la base de datos de las VLANs
+vlan 10
+name Directores
+exit
+
+vlan 20
+name Servidores
+exit
+
+! Definición de puertos trunk
+int g0/1
+switchport mode trunk
+no shut
+exit
+
+
+! Definición de los puertos de acceso
+int range f0/1-8
+switchport mode access
+switchport access vlan 10
+exit
+
+int range f0/9-24
+switchport mode access
+switchport access vlan 20
+exit
+
+! ===========================
+! ======== ISP ===============
+! ===========================
+
+en
+config t
+
+hostname ISP
+
+no ip domain-lookup
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+interface GigabitEthernet0/0
+ip address 65.0.1.9 255.255.255.252
+no shut
+
+interface GigabitEthernet0/1
+ip address 1.1.1.2 255.255.255.252
+no shut
+
+interface Serial0/0/0
+ip address 132.254.89.246 255.255.255.252
+clock rate 128000
+no shut
+
+ip route 132.254.89.0 255.255.255.0 Serial0/0/0 

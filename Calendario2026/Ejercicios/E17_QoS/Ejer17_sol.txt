@@ -1,0 +1,119 @@
+!-----------------------------------------------------------------------------------
+! PASOS PARA CONFIGURAR QoS
+!-----------------------------------------------------------------------------------
+! 1. Configurar los tipos de tráfico (class-map)
+! 2. Configurar el mapa de políticas (policy-map)
+     Acciones a realizar con este tipo de tráfico
+! 3. Aplicar las políticas de acciones a una interface del ruteador (service-policy)
+!-----------------------------------------------------------------------------------
+
+!-------------------------------------------------
+! Ruteador INGENIERIA
+!-------------------------------------------------
+
+class-map match-any CRITICO
+match protocol ospf
+match protocol telnet
+match protocol ssh
+exit
+
+class-map match-any MEDIO
+match protocol ftp
+match protocol smtp
+match protocol pop3
+exit
+
+class-map match-any BAJO
+match protocol http
+match protocol dns
+match protocol icmp
+exit
+
+policy-map POLITICAS
+class CRITICO
+set precedence 7
+class MEDIO
+set precedence 5
+class BAJO
+set precedence 3
+exit
+
+interface Serial0/0/1
+service-policy output POLITICAS
+
+!-------------------------------------------------
+! Ruteador CENTRAL
+!-------------------------------------------------
+
+class-map match-any CRITICO
+match protocol ospf
+match protocol telnet
+match protocol ssh
+exit
+
+class-map match-any MEDIO
+match protocol ftp
+match protocol smtp
+match protocol pop3
+exit
+
+class-map match-any BAJO
+match protocol http
+match protocol dns
+match protocol icmp
+exit
+
+policy-map POLITICAS
+class CRITICO
+set precedence 7
+class MEDIO
+set precedence 5
+class BAJO
+set precedence 3
+exit
+
+interface GigabitEthernet0/0
+service-policy input POLITICAS
+
+interface GigabitEthernet0/1
+service-policy input POLITICAS
+
+interface Serial0/0/0
+service-policy output POLITICAS
+
+interface Serial0/0/1
+service-policy output POLITICAS
+
+!-------------------------------------------------
+! Ruteador LICENCIATURA
+!-------------------------------------------------
+
+class-map match-any CRITICO
+match protocol ospf
+match protocol telnet
+match protocol ssh
+exit
+
+class-map match-any MEDIO
+match protocol ftp
+match protocol smtp
+match protocol pop3
+exit
+
+class-map match-any BAJO
+match protocol http
+match protocol dns
+match protocol icmp
+exit
+
+policy-map POLITICAS
+class CRITICO
+set precedence 7
+class MEDIO
+set precedence 5
+class BAJO
+set precedence 3
+exit
+
+interface Serial0/0/0
+service-policy output POLITICAS

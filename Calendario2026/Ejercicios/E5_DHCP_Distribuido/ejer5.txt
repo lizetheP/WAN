@@ -5,9 +5,9 @@ ISP
 ! Rutas estáticas hacia las redes de la empresa Bosch
 
 
----------------------------------------------
-ROUTER R1
----------------------------------------------
+!---------------------------------------------
+!ROUTER R1
+!---------------------------------------------
 en
 config t
 
@@ -29,6 +29,15 @@ login
 logging synchronous
 
 banner motd # Solo acceso autorizado #
+
+! Configuración DHCP
+!---------------------------------------------
+ip dhcp excluded-address
+
+ip dhcp pool
+network 
+default-router 
+dns-server 
 
 interface G0/0
 description Enlace a Red Amarilla

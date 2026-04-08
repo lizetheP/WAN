@@ -25,6 +25,18 @@ logging synchronous
 
 banner motd # Solo acceso autorizado #
 
+! Configuración de DHCP
+!-------------------------------------
+
+ip dhcp excluded-address 
+
+ip dhcp pool 
+network 
+dns-server 
+default-router 
+
+!-------------------------------------
+
 interface G0/0
 description Enlace a Red Azul
 ip address 192.168.2.1 255.255.255.0

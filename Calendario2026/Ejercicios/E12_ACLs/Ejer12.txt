@@ -21,7 +21,15 @@ Extendidas 100 - 199
 
 1. Diseña una lista de control de acceso extendida para impedir que las computadoras de la subredes de Profesores y Alumnos tengan acceso a la subred de Directores.
 
-
+access-list 101 remark Permitir respuestas de retorno a Profesores y alumnos desde Directores
+access-list 101 permit ip 132.254.89.192 0.0.0.31 any:
+! Permite que la subred de Directores pueda salir hacia cualquier destino.
+access-list 101 permit tcp any 132.254.89.192 0.0.0.31 established
+! El parámetro established permite que paquetes TCP entren a la red de Directores solo si son parte de una sesión 
+! que el Director ya inició previamente.
+access-list 101 permit icmp any 132.254.89.192 0.0.0.31 echo-reply:
+! Permite que los Directores reciban respuestas de "Ping" (echo-reply). Si un Director hace ping a un Alumno, 
+! esta línea permite que la respuesta regrese.
 
 !------------------------------------------------------------
 !Ejercicio 2
@@ -29,6 +37,15 @@ Extendidas 100 - 199
 
 2. Diseña una lista de control de acceso extendida para que el visitante 1 no pueda acceder a la subred de Servidores
 
+!Asegura de que si un Servidor intenta contactar al Visitante 1, la respuesta pueda pasar.
+access-list 102 remark Permitir tráfico de retorno a Visitante1 desde Servidores
+access-list 102 permit ip 132.254.89.128 0.0.0.63 any
+!Permite que la subred de Servidores envíe tráfico hacia cualquier destino.
+access-list 102 permit tcp any 132.254.89.128 0.0.0.63 established
+!Permite paquetes TCP de vuelta hacia los servidores, siempre y cuando la conexión haya sido iniciada 
+!originalmente por un servidor (gracias al parámetro established).
+access-list 102 permit icmp any 132.254.89.128 0.0.0.63 echo-reply
+!Permite que los servidores reciban respuestas de Ping (echo-reply) desde cualquier lugar.
 
 
 !------------------------------------------------------------
@@ -37,6 +54,14 @@ Extendidas 100 - 199
 
 3. Diseña una lista de control de acceso extendida para impedir que las computadoras de la subred de Profesores tengan acceso al servidor de Directivos.
 
+access-list 103 remark Permitir tráfico de retorno a Profesores desde Server Directivos
+access-list 103 permit ip host 132.254.89.221 any
+!Permite que el Servidor de Directivos envíe cualquier tipo de tráfico IP hacia cualquier destino.
+access-list 103 permit tcp any host 132.254.89.221 established
+!Permite que entren paquetes TCP al servidor solo si son parte de una conexión que el servidor inició primero.
+access-list 103 permit icmp any host 132.254.89.221 echo-reply
+!Permite que el servidor reciba las respuestas de los Pings que él mismo realice.
+
 
 !------------------------------------------------------------
 !Ejercicio 4
@@ -44,6 +69,14 @@ Extendidas 100 - 199
 
 4. Diseña una lista de control de acceso extendida para que la sección de Alumnos no pueda acceder al servidor de profesores vía el protocolo WEB ni por FTP.
 
+!Se busca que el Servidor de Profesores pueda responder si él inicia una comunicación.
+access-list 104 remark Permitir tráfico de retorno a Alumnos desde Server Profesores
+access-list 104 permit ip host 132.254.89.238 any
+!Permite que el Servidor de Profesores envíe cualquier paquete hacia afuera.
+access-list 103 permit tcp any host 132.254.89.238 established
+!Permite el tráfico TCP de regreso al servidor solo si la sesión ya fue establecida por él mismo.
+access-list 103 permit icmp any host 132.254.89.238 echo-reply
+!Permite que el servidor reciba respuestas de Ping.
 
 ------------------------------------------------------------
 Ejercicio 5
@@ -51,6 +84,13 @@ Ejercicio 5
 
 5. Diseña una lista de control de acceso extendida que únicamente permita el acceso al servidor de Finanzas desde cualquier IP asociada con la subred de Directores pero que impida el acceso a este servidor desde otras direcciones IP. Permite el resto del tráfico. En esta ocasión el servidor de Finanzas al no permitir ningún tipo de tráfico desde direcciones diferentes de Directores dará la impresión de que no existe. 
 
+access-list 105 remark Permite tráfico de retorno de Finanzas.com hacia otras redes
+access-list 105 permit ip host 132.254.89.129 any
+!Permite que el Servidor de Finanzas envíe cualquier paquete hacia cualquier destino.
+access-list 105 permit tcp any host 132.254.89.129 established
+!Permite la entrada de paquetes TCP al servidor, siempre que el servidor haya sido quien inició la conexión.
+access-list 105 permit icmp any host 132.254.89.129 echo-reply
+!Permite que el servidor reciba las respuestas de los pings que él mismo envíe.
 
 ------------------------------------------------------------
 Ejercicio 6

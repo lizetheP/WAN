@@ -22,14 +22,14 @@ Extendidas 100 - 199
 1. Diseña una lista de control de acceso extendida para impedir que las computadoras de la subredes de Profesores y Alumnos tengan acceso a la subred de Directores.
 
 access-list 101 remark Permitir respuestas de retorno a Profesores y alumnos desde Directores
-access-list 101 permit ip 132.254.89.192 0.0.0.31 any:
+access-list 101 permit ip 132.254.89.192 0.0.0.31 any
 ! Permite que la subred de Directores pueda salir hacia cualquier destino.
 
 access-list 101 permit tcp any 132.254.89.192 0.0.0.31 established
 ! El parámetro established permite que paquetes TCP entren a la red de Directores solo si son parte de una sesión 
 ! que el Director ya inició previamente.
 
-access-list 101 permit icmp any 132.254.89.192 0.0.0.31 echo-reply:
+access-list 101 permit icmp any 132.254.89.192 0.0.0.31 echo-reply
 ! Permite que los Directores reciban respuestas de "Ping" (echo-reply). Si un Director hace ping a un Alumno, 
 ! esta línea permite que la respuesta regrese.
 
@@ -76,7 +76,6 @@ access-list 103 permit icmp any host 132.254.89.221 echo-reply
 !------------------------------------------------------------
 
 
-
 !------------------------------------------------------------
 !Ejercicio 4
 !------------------------------------------------------------
@@ -97,8 +96,6 @@ access-list 104 permit icmp any host 132.254.89.238 echo-reply
 !------------------------------------------------------------
 
 
-
-
 !------------------------------------------------------------
 !Ejercicio 5
 !------------------------------------------------------------
@@ -114,6 +111,9 @@ access-list 105 permit tcp any host 132.254.89.129 established
 
 access-list 105 permit icmp any host 132.254.89.129 echo-reply
 ! Permite que el servidor reciba las respuestas de los pings que él mismo envíe.
+
+!------------------------------------------------------------
+
 
 !------------------------------------------------------------
 !Ejercicio 6

@@ -24,6 +24,15 @@ logging sync
 
 enable password class
 
+! DHCP
+
+ip dhcp excluded-address 
+
+ip dhcp pool 
+network 
+default-router
+dns-server
+
 int s0/0/0
 description La conexion con el ISP 
 ip address 150.1.3.226 255.255.255.252
@@ -66,15 +75,6 @@ login
 logging sync
 
 enable password class
-
-! DHCP Distribuido
-
-ip dhcp excluded-address 
-
-ip dhcp pool 
-network 
-default-router
-dns-server
 
 int g0/0
 description SubredNaranja

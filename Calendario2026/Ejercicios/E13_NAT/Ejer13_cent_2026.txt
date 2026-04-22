@@ -1,4 +1,12 @@
 !---------------------------------------------------------------
+!ISP
+!---------------------------------------------------------------
+
+! Entrega el direccionamiento público asignado.
+ip route 170.15.9.32 255.255.255.224 65.10.8.66
+! ip route 170.15.9.32 255.255.255.224 s0/0/0
+
+!---------------------------------------------------------------
 !Router A
 !---------------------------------------------------------------
 en
@@ -78,20 +86,17 @@ network 10.0.3.128 0.0.0.3 area 0
 network 10.0.4.0 0.0.3.255 area 0
 default-information originate
 
+! Traduccion estatica
+!--------------------------------
+ip nat inside source static 10.0.1.253 170.15.9.32
+
 !NAT
 !----------------------------------------------------------------
 !Traduccion dinamica uno a uno, por cada direccion IP privada 
 !se asignara una direccion IP publica.
 
-!Definir un pool de direcciones globales (públicas) que serán asignadas cuando sean necesarias.
 ip nat pool MyPool 170.15.9.33 170.15.9.63 netmask 255.255.255.224
-
-!Definir una ACL estándar con las direcciones IP privadas que tienen permiso a ser traducidas
 access-list 10 permit any
-!access-list 20 permit 10.0.0.0 0.0.1.255
-!access-list 20 permit 10.0.4.0 0.0.3.255
-
-!Establecer la traducción de direcciones utilizando una lista de acceso:
 ip nat inside source list 10 pool MyPool
 
 int g0/1
@@ -106,6 +111,16 @@ int s0/1/0
 ip nat outside
 exit
 
+!Definir un pool de direcciones globales (públicas) que serán asignadas cuando sean necesarias.
+ip nat pool MyPool 170.15.9.33 170.15.9.63 netmask 255.255.255.224
+
+!Definir una ACL estándar con las direcciones IP privadas que tienen permiso a ser traducidas
+access-list 10 permit any
+!access-list 20 permit 10.0.0.0 0.0.1.255
+!access-list 20 permit 10.0.4.0 0.0.3.255
+
+!Establecer la traducción de direcciones utilizando una lista de acceso:
+ip nat inside source list 10 pool MyPool
 
 !PAT
 !----------------------------------------------------------------
@@ -113,54 +128,3 @@ exit
 !una o pocas direcciones IP públicas para salir al exterior.
 
 ip nat inside source list 10 pool MyPool overload
-
-! Traduccion estatica
-!--------------------------------
-ip nat inside source static 10.0.1.253 170.15.9.32
-
-int g0/1
-ip nat inside
-exit
-
-int s0/1/1
-ip nat inside
-exit
-
-int s0/1/0
-ip nat outside
-exit
-
-!---------------------------------------------------------------
-!ISP
-!---------------------------------------------------------------
-en
-config t
-
-hostname ISP
-
-service password-encryption
-
-enable secret class
-
-interface G0/0
-ip address 20.0.0.1 255.0.0.0
-no shut
-
-interface G0/1
-ip address 5.0.0.1 255.0.0.0
-no shut
-
-interface Serial0/0/0
-ip address 65.10.8.65 255.255.255.224
-clock rate 128000
-no shut
-
-! Entrega el direccionamiento público asignado.
-ip route 170.15.9.32 255.255.255.224 65.10.8.66
-! ip route 170.15.9.32 255.255.255.224 s0/0/0
-
-line con 0
-password cisco
-login
-
-

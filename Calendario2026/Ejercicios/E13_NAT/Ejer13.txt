@@ -87,15 +87,18 @@ ip nat inside source static
 ! Traducción dinámica de uno a uno, por cada dirección IP privada
 ! se asignará una dirección IP pública.
 
+!Definir una ACL estándar con las direcciones IP privadas que tienen permiso a ser traducidas
 access-list
+
+!Definir un pool de direcciones globales (públicas) que serán asignadas cuando sean necesarias.
 ip nat pool
+
+!Establecer la traducción de direcciones utilizando una lista de acceso
 ip nat inside source list
+
 
 !----------------------------------------------------------------
 ! PAT
 !----------------------------------------------------------------
 ! Traducción dinámica de muchas direcciones IP privadas contra
 ! una o pocas direcciones IP públicas para salir al exterior.
-
-
-

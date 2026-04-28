@@ -7,8 +7,6 @@ config t
 
 hostname gateway
 
-no ip domain-lookup
-
 service password-encryption
 
 enable secret class
@@ -40,8 +38,6 @@ en
 config t
 
 hostname ISP
-
-no ip domain-lookup
 
 service password-encryption
 

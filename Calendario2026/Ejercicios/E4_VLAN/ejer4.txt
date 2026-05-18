@@ -17,6 +17,9 @@ password cisco
 login
 logging synchronous
 
+! HABILITAR RUTEO EN EL SWITCH MULTICAPA
+
+
 ! CONFIGURAR EL PUERTO G0/2
 
 
@@ -93,33 +96,7 @@ logging synchronous
 !-------------
 !Switch S3
 !-------------
-en
-config t
 
-hostname S3
-
-enable password class
-
-line con 0
-password cisco
-login
-logging synchronous
-
-line vty 0 15
-password cisco
-login
-logging synchronous
-
-! CONFIGURAR VLANs
-
-
-! CONFIGURAR PUERTOS DE ACCESO
-
-
-! CONFIGURAR PUERTOS TRONCALES
-
-
-! CONFIGURAR IP DEL SWITCH
 
 
 !----------------------------------------

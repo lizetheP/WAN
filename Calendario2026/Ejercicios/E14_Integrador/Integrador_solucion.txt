@@ -327,7 +327,19 @@ exit
 
 ip nat pool MyPool 180.15.2.129 180.15.2.255 netmask 255.255.255.128
 ip nat inside source list 1 pool MyPool
-access-list 1 permit any
+no access-list 1 permit any
+
+access-list 1 permit 10.0.2.0 0.0.0.31
+access-list 1 permit 10.0.3.0 0.0.0.15
+access-list 1 permit 10.0.1.0 0.0.0.7
+access-list 1 permit 10.0.4.0 0.0.3.255
+access-list 1 permit 10.0.3.128 0.0.0.3
+
+
+
+
+
+
 
 ! Traduccion estatica
 !--------------------------------

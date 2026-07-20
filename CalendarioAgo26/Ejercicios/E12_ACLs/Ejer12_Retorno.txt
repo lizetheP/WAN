@@ -1,0 +1,223 @@
+!-------------------------------------------------------------------------------
+! Mejores prácticas para el diseño de listas de control de acceso “Extendidas”
+!-------------------------------------------------------------------------------
+! 1. Identificar la fuente/origen (tráfico fuente) y el destino.
+! 2. Trazar el trayecto del tráfico NO permitido. 
+! 3. Trazar el trayecto del tráfico permitido. 
+! 4. Identificar el router donde se instalará la lista de control de acceso.
+! 5. Identificar la interfaz donde se va a asociar la lista de control de acceso.
+! 6. Escribir la ACL, instalarla y probarla.
+
+! NOTA: Realizar pruebas de conectividad antes y después de instalar una ACL
+
+REGLA: LAS LISTAS DE CONTROL DE ACCESO EXTENDIDAS SE DEBEN INSTALAR LO MAS CERCA DEL ORIGEN, PARA EVITAR QUE EL TRÁFICO LLEGUE A LUGARES DONDE NO SE NECESITE LLEGAR.
+
+Estándar 1 - 99
+Extendidas 100 - 199
+
+!-------------------------------
+! Ejercicio 1
+!-------------------------------
+
+1. Diseña una lista de control de acceso extendida para impedir que las computadoras de la subredes de Profesores y Alumnos tengan acceso a la subred de Directores.
+
+!Se utilizan para controlar el flujo de tráfico TCP e ICMP, específicamente
+!para permitir el tráfico de retorno de conexiones iniciadas desde la red interna 
+!o bien para permitir solo respuestas ICMP, no pings de inicio. 
+
+!permit tcp: Permite el tráfico del protocolo TCP (Protocolo de Control de Transmisión).
+!permit icmp: Permite el tráfico del protocolo ICMP (Protocolo de Mensajes de Control de Internet), 
+!utilizado para diagnósticos como el ping.
+
+!established: Esta palabra clave solo permite paquetes TCP que pertenecen 
+!a una conexión que ya ha sido establecida (iniciada por alguien del lado 
+!de la red interna-protegida) y no es un intento de iniciar una nueva
+!conexión desde el exterior. 
+
+!echo-reply: Esta palabra clave restringe el tipo de tráfico ICMP permitido a solo las 
+!respuestas de eco, que son los paquetes de respuesta a una solicitud de ping. 
+!Esto permite que los pings iniciados desde la red interna reciban su respuesta, 
+!pero bloquea los intentos de ping que se originan desde el exterior 
+!(solicitudes de eco o "echo requests") a menos que se permita explícitamente. 
+
+!En resumen, estas reglas se usan comúnmente para permitir que el 
+!tráfico saliente de la red interna regrese (como las respuestas de servidores web o respuestas de ping), mientras se mantiene un nivel de seguridad al bloquear intentos de conexión o pings no solicitados provenientes de Internet. Es una configuración típica para permitir la navegación web y la conectividad básica sin exponer completamente la red interna. 
+
+access-list 101 remark Permitir respuestas de retorno a Profesores y alumnos desde Directores
+access-list 101 permit ip 132.254.89.192 0.0.0.31 any
+access-list 101 permit tcp any 132.254.89.192 0.0.0.31 established
+access-list 101 permit icmp any 132.254.89.192 0.0.0.31 echo-reply
+
+access-list 101 remark Impide tráfico de Profesores/Alumnos a Directores
+access-list 101 deny ip 132.254.89.232 0.0.0.7 132.254.89.192 0.0.0.31
+access-list 101 deny ip 132.254.89.0 0.0.0.127 132.254.89.192 0.0.0.31
+access-list 101 permit ip any any
+
+! RB (opción 1)
+int g0/1.30
+ip access-group 101 in
+
+int g0/1.40
+ip access-group 101 in
+
+------------------------------------------------------------------------------- 
+access-list 101 remark Permitir respuestas de retorno a Profesores y alumnos desde Directores
+access-list 101 permit ip 132.254.89.192 0.0.0.31 any
+access-list 101 permit tcp any 132.254.89.192 0.0.0.31 established
+access-list 101 permit icmp any 132.254.89.192 0.0.0.31 echo-reply
+
+access-list 101 remark Impide tráfico de Profesores/Alumnos a Directores
+access-list 101 deny ip 132.254.89.232 0.0.0.7 132.254.89.192 0.0.0.31
+access-list 101 deny ip 132.254.89.0 0.0.0.127 132.254.89.192 0.0.0.31
+access-list 101 permit ip any any
+
+! RB (opción 2)
+int s0/0/1
+ip access-group 101 out
+
+
+int s0/0/1
+no ip access-group 101 out
+
+255.255.255.255
+255.255.255.128
+----------------
+0.0.0.127
+
+
+255.255.255.255
+255.255.255.224
+----------------
+0.0.0.31
+!------------------------------------------------------------
+!Ejercicio 2
+!------------------------------------------------------------
+
+2. Diseña una lista de control de acceso extendida para que el visitante 1 no pueda acceder a la subred de Servidores
+
+access-list 102 remark Permitir tráfico de retorno a Visitante1 desde Servidores
+access-list 102 permit ip 132.254.89.128 0.0.0.63 any
+access-list 102 permit tcp any 132.254.89.128 0.0.0.63 established
+access-list 102 permit icmp any 132.254.89.128 0.0.0.63 echo-reply
+
+access-list 102 remark Impide tráfico de Visitante1 a Servidores
+! Equipos NO CISCO
+!access-list 102 deny ip 132.254.89.120 0.0.0.0 132.254.89.128 0.0.0.63
+! Equipos CISCO
+access-list 102 deny ip host 132.254.89.120 132.254.89.128 0.0.0.63
+access-list 102 permit ip any any
+
+! Router B
+int g0/1.40
+ip access-group 102 in
+
+-----------------------------------------------------------------------
+access-list 102 remark Permitir tráfico de retorno a Visitante1 desde Servidores
+access-list 102 permit ip 132.254.89.128 0.0.0.63 any
+access-list 102 permit tcp any 132.254.89.128 0.0.0.63 established
+access-list 102 permit icmp any 132.254.89.128 0.0.0.63 echo-reply
+
+access-list 102 remark Impide tráfico de Visitante1 a Servidores
+access-list 102 deny ip host 132.254.89.120 132.254.89.128 0.0.0.63
+access-list 102 permit ip any any
+
+! Router B
+int g0/1.40
+ip access-group 102 in
+
+int g0/1.40
+no ip access-group 102 in
+
+255.255.255.255
+255.255.255.192
+----------------
+0.0.0.63
+
+
+!------------------------------------------------------------
+!Ejercicio 3
+!------------------------------------------------------------
+
+3. Diseña una lista de control de acceso extendida para impedir que las computadoras de la subred de Profesores tengan acceso al servidor de Directivos.
+
+access-list 103 remark Permitir tráfico de retorno a Profesores desde Server Directivos
+access-list 103 permit ip host 132.254.89.221 any
+access-list 103 permit tcp any host 132.254.89.221 established
+access-list 103 permit icmp any host 132.254.89.221 echo-reply
+
+access-list 103 remark Impide tráfico de Profesores a Server Directivos
+access-list 103 deny ip 132.254.89.232 0.0.0.7 host 132.254.89.221
+access-list 103 permit ip any any
+
+! Router B
+int g0/1.30
+ip access-group 103 in
+
+! Router B
+int g0/1.30
+no ip access-group 103 in
+
+
+
+!------------------------------------------------------------
+!Ejercicio 4
+!------------------------------------------------------------
+
+4. Diseña una lista de control de acceso extendida para que la sección de Alumnos no pueda acceder al servidor de profesores vía el protocolo WEB ni por FTP.
+
+access-list 104 remark Permitir tráfico de retorno a Alumnos desde Server Profesores
+access-list 104 permit ip host 132.254.89.238 any
+access-list 103 permit tcp any host 132.254.89.238 established
+access-list 103 permit icmp any host 132.254.89.238 echo-reply
+
+access-list 104 remark Impide tráfico de Alumnos a Server Profesores vía WEB / FTP
+access-list 104 deny tcp 132.254.89.0 0.0.0.127 host 132.254.89.238 eq 80
+access-list 104 deny tcp 132.254.89.0 0.0.0.127 host 132.254.89.238 eq 20
+access-list 104 deny tcp 132.254.89.0 0.0.0.127 host 132.254.89.238 eq 21
+access-list 104 permit ip any any
+
+! Router B
+int g0/1.40
+ip access-group 104 in
+
+int g0/1.40
+no ip access-group 104 in
+
+------------------------------------------------------------
+Ejercicio 5
+------------------------------------------------------------
+
+5. Diseña una lista de control de acceso extendida que únicamente permita el acceso al servidor de Finanzas desde cualquier IP asociada con la subred de Directores pero que impida el acceso a este servidor desde otras direcciones IP. Permite el resto del tráfico. En esta ocasión el servidor de Finanzas al no permitir ningún tipo de tráfico desde direcciones diferentes de Directores dará la impresión de que no existe. 
+
+access-list 105 remark Permite tráfico de retorno de Finanzas.com hacia otras redes
+access-list 105 permit ip host 132.254.89.129 any
+access-list 105 permit tcp any host 132.254.89.129 established
+access-list 105 permit icmp any host 132.254.89.129 echo-reply
+
+access-list 105 remark Permite acceso Finanzas.com unicamente desde Directores
+access-list 105 permit ip 132.254.89.192 0.0.0.31 host 132.254.89.129
+access-list 105 deny ip any host 132.254.89.129
+access-list 105 permit ip any any
+
+! Router A
+int g0/0.20
+ip access-group 105 out
+
+int g0/0.20
+no ip access-group 105 out
+
+
+------------------------------------------------------------
+Ejercicio 6
+------------------------------------------------------------
+
+6. Diseña una lista de control de acceso extendida para que ninguna dirección IP interna de nuestra red pueda acceder al servidor dnsserver vía el protocolo WEB. 
+
+access-list 106 remark Impide acceso a dnsserver via WEB desde nuestra red
+access-list 106 deny tcp any host 1.1.1.1 eq 80
+access-list 106 permit ip any any
+
+! Router B
+int s0/0/0
+ip access-group 106 out
+

@@ -1,0 +1,101 @@
+!---------------------------------------------------------------
+!ISP
+!---------------------------------------------------------------
+! Ya configurado
+
+! Ruta estática con el direccionamiento público asignado
+
+!---------------------------------------------------------------
+!Router A
+!---------------------------------------------------------------
+en
+config t
+
+hostname RA
+
+! DHCP
+
+ip dhcp excluded-address 
+
+ip dhcp pool
+network
+default-router
+dns-server 
+
+interface G0/1
+ip address 10.0.1.254 255.255.254.0
+no shut
+
+interface Serial0/1/0
+ip address 10.0.3.130 255.255.255.252
+clock rate 128000
+no shut
+
+router ospf 1
+passive-interface GigabitEthernet0/1
+network 10.0.0.0 0.0.1.255 area 0
+network 10.0.3.128 0.0.0.3 area 0
+
+!---------------------------------------------------------------
+!Router B
+!---------------------------------------------------------------
+en
+config t
+
+hostname RB
+
+! DHCP
+
+ip dhcp excluded-address 
+
+ip dhcp pool
+network
+default-router
+dns-server 
+
+interface G0/1
+ip address 10.0.7.254 255.255.252.0
+no shut
+
+interface Serial0/1/0
+ip address 65.10.8.66 255.255.255.252
+no shut
+
+interface Serial0/1/1
+ip address 10.0.3.129 255.255.255.252
+no shut
+
+! Ruta por default
+
+
+router ospf 1
+passive-interface GigabitEthernet0/1
+passive-interface Serial0/1/0
+network 10.0.3.128 0.0.0.3 area 0
+network 10.0.4.0 0.0.3.255 area 0
+default-information originate
+
+!----------------------------------------------------------------
+! Traducción estática
+!----------------------------------------------------------------
+
+ip nat inside source static 
+
+!----------------------------------------------------------------
+! NAT
+!----------------------------------------------------------------
+! Traducción dinámica de uno a uno, por cada dirección IP privada
+! se asignará una dirección IP pública.
+
+access-list
+ip nat pool
+ip nat inside source list
+
+!----------------------------------------------------------------
+! PAT
+!----------------------------------------------------------------
+! Traducción dinámica de muchas direcciones IP privadas contra
+! una o pocas direcciones IP públicas para salir al exterior.
+
+
+

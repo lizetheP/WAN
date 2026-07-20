@@ -1,0 +1,308 @@
+! 1. Configurar la IP s0/0/1 del router frontera
+! 2. Configurar las VLANs
+!     2.1 Configurar las interfaces del RFrontera 
+!     2.2 Configurar las interfaces con la última dirección válida
+!         de la subred
+!     2.3 Crear las VLANs con nombre y rango en Switch SCompany
+! 3. Configurar una ruta por default.
+! ===========================
+! ======== RFrontera ==========
+! ===========================
+
+ena
+config t
+hostname RFrontera
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 4 
+password cisco 
+login
+exit
+
+int s0/0/1
+desc Interfaz que conecta con ISP
+ip address 65.255.255.253 255.255.255.252
+no shut
+
+! Declaración de subinterfaces.
+
+! Manager VLAN 10
+int g0/0.10
+description VLAN Manager
+encapsulation dot1Q 10
+ip address 192.168.1.142 255.255.255.240
+
+! Users VLAN 20
+int g0/0.20
+description VLAN Users
+encapsulation dot1Q 20
+ip address 192.168.1.126 255.255.255.128
+
+! Services VLAN 30
+int g0/0.30
+description VLAN Services
+encapsulation dot1Q 30
+ip address 192.168.1.150 255.255.255.248
+
+! Gestion VLAN 99
+int g0/0.99
+description VLAN Gestion
+encapsulation dot1Q 99
+ip address 192.168.1.158 255.255.255.248
+
+int g0/0
+no shut
+
+! Establecer una ruta por default que se encargue de sacar el tráfico a Internet
+ip route 0.0.0.0 0.0.0.0 s0/0/1
+
+end
+
+! ====================
+! ===== SCompany ======
+! ====================
+
+ena
+conf t
+hostname SCompany
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+vlan 10
+name Manager
+exit
+
+vlan 20
+name Users
+exit
+
+vlan 30
+name Services
+exit
+
+vlan 99
+name Gestion
+exit
+
+!vlan 99 es una red de gestión para que los switches puedan administrarse desde el exterior.
+
+! Definición de puertos trunk
+int g0/1
+switchport mode trunk
+no shut
+
+int f0/1
+switchport mode trunk
+no shut
+
+int f0/2
+switchport mode trunk
+no shut
+
+int vlan 99
+description VLAN de gestion
+ip address 192.168.1.153 255.255.255.248
+no shut
+
+ip default-gateway 192.168.1.158
+
+end
+
+! ====================
+! ====== SOeste ======
+! ====================
+
+ena
+conf t
+hostname SOeste
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+vlan 10
+name Manager
+exit
+
+vlan 20
+name Users
+exit
+
+vlan 30
+name Services
+exit
+
+vlan 99
+name Gestion
+exit
+
+! Definición de los puertos de acceso
+int range f0/2-6
+switchport mode access
+switchport access vlan 10
+
+int range f0/7-19
+switchport mode access
+switchport access vlan 20
+
+int range f0/20-24
+switchport mode access
+switchport access vlan 30
+
+int f0/1
+switchport mode trunk
+no shut
+
+int vlan 99
+description VLAN de gestion
+ip address 192.168.1.154 255.255.255.248
+no shut
+
+ip default-gateway 192.168.1.158
+
+end
+
+! ====================
+! ====== SEste ======
+! ====================
+
+ena
+conf t
+hostname SEste
+
+no ip domain-lookup
+service password-encryption 
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited.# 
+
+line con 0
+password cisco 
+login
+logging synchronous 
+
+line vty 0 15 
+password cisco 
+login
+exit
+
+! Creación de la base de datos de las VLANs
+vlan 10
+name Manager
+exit
+
+vlan 20
+name Users
+exit
+
+vlan 30
+name Services
+exit
+
+vlan 99
+name Gestion
+exit
+
+! Definición de los puertos de acceso
+int range f0/2-6
+switchport mode access
+switchport access vlan 10
+
+int range f0/7-19
+switchport mode access
+switchport access vlan 20
+
+int range f0/20-24
+switchport mode access
+switchport access vlan 30
+
+int f0/1
+switchport mode trunk
+no shut
+
+int vlan 99
+description VLAN de gestion
+ip address 192.168.1.155 255.255.255.248
+no shut
+
+ip default-gateway 192.168.1.158
+
+end
+
+! ===========================
+! ======== ISP ==========
+! ===========================
+
+ena
+config t
+hostname ISP
+no ip domain-lookup
+service password-encryption
+
+enable secret class
+
+line con 0
+password cisco
+login
+logging sync
+
+line vty 0 4
+password cisco
+login
+
+interface GigabitEthernet0/0
+ip address 151.101.193.70 255.255.255.248
+no shutdown
+
+interface Serial0/0/0
+ip address 65.255.255.254 255.255.255.252
+clock rate 128000
+no shutdown
+
+ip route 192.168.1.128 255.255.255.240 Serial0/0/0
+ip route 192.168.1.0 255.255.255.128 Serial0/0/0
+ip route 192.168.1.144 255.255.255.248 Serial0/0/0
+ip route 192.168.1.152 255.255.255.248 Serial0/0/0
+

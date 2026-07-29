@@ -1,0 +1,148 @@
+Switch 1
+-------------------------------------------------------
+hostname S1
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 15
+password cisco
+login
+
+int vlan 1
+ip address 192.168.1.11 255.255.255.0
+no shut
+
+ip default-gateway 192.168.1.1
+
+int range f0/2-4, f0/7-24, g0/1-2
+shut
+
+! Configuración de VLANs
+
+vlan 10
+name Students
+exit
+
+vlan 20
+name Faculty
+exit
+
+int f0/6
+switchport mode access
+switchport access vlan 10
+
+int f0/5
+switchport mode trunk
+
+int f0/1
+switchport mode trunk
+
+-------------------------------------------------------
+Switch 2
+-------------------------------------------------------
+en
+config t
+
+hostname S2
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 15
+password cisco
+login
+
+int vlan 1
+ip address 192.168.1.12 255.255.255.0
+no shut
+
+ip default-gateway 192.168.1.1
+
+int range f0/2-17, f0/19-24, g0/1-2
+shut
+
+! Configuración de VLANs
+
+vlan 10
+name Students
+exit
+
+vlan 20
+name Faculty
+exit
+
+int f0/18
+switchport mode access
+switchport access vlan 20
+
+int f0/1
+switchport mode trunk
+
+------------------------------------------
+ROUTER R1
+------------------------------------------
+
+no ip domain-lookup
+
+hostname R1
+
+service password-encryption
+
+enable secret class
+
+banner motd # Unauthorized access is strictly prohibited. #
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+
+int Lo0
+ip address 209.165.200.225 255.255.255.224
+no shut
+
+! CONFIGURACIÓN DE SUBINTERFACES
+
+int g0/0/1.1
+desc VLAN nativa
+encapsulation dot1q 1
+ip address 192.168.1.1 255.255.255.0
+
+int g0/0/1.10
+desc VLAN Students
+encapsulation dot1q 10
+ip address 192.168.10.1 255.255.255.0
+
+int g0/0/1.20
+desc VLAN Faculty
+encapsulation dot1q 20
+ip address 192.168.20.1 255.255.255.0
+
+int g0/0/1
+no shut
+

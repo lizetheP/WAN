@@ -1,0 +1,103 @@
+!-----------------------------------------------------------------------------------
+! PASOS PARA CONFIGURAR QoS
+!-----------------------------------------------------------------------------------
+! 1. Configurar los tipos de tráfico (class-map)
+! 2. Configurar las acciones a realizar con este tipo de tráfico (policy-map)
+! 3. Aplicar las políticas de acciones a una interface del ruteador (service-policy)
+!-----------------------------------------------------------------------------------
+
+!-------------------------------------------------------------
+! R1
+!-------------------------------------------------------------
+! PARTE 1
+!-------------------------------------------------------------
+
+! 1. Tipos de tráfico (class-map)
+!-----------------------------------------------
+
+access-list 1 permit host 10.1.1.100
+
+class-map INTERESANTE
+match access-group 1
+
+! 2. Acciones a realizar con este tipo de tráfico (policy-map)
+!-------------------------------------------------------------
+
+policy-map DEMO
+
+class INTERESANTE
+set precedence 5
+
+! 3. Aplicar las políticas a una interface del ruteador (service-policy)
+!-----------------------------------------------------------------------
+
+int f0/0
+service-policy input DEMO
+
+!-------------------------------------------------------------
+! PARTE 2
+!-------------------------------------------------------------
+
+class-map PRIORIDAD5
+match precedence 5
+exit
+
+policy-map PRIORIDADES
+
+class PRIORIDAD5
+priority 1000
+
+class class-default
+fair-queue
+
+int s0/0/0
+service-policy output PRIORIDADES
+
+!-------------------------------------------------------------
+! R2
+!-------------------------------------------------------------
+! PARTE 3
+!-------------------------------------------------------------
+
+class-map PRIORIDAD5
+match precedence 5
+exit
+
+policy-map PRIORIDADES
+
+class PRIORIDAD5
+priority 1000
+
+class class-default
+fair-queue
+
+int f0/0
+service-policy output PRIORIDADES
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

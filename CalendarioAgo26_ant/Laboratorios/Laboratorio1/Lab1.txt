@@ -1,0 +1,88 @@
+!---------------------------------------------
+! Router ISP
+!---------------------------------------------
+
+en
+config t
+
+hostname ISP
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd #Unauthorized access is strictly prohibited#
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+logging synchronous
+
+!---------------------------------------------
+! Router WEST
+!---------------------------------------------
+
+en
+config t
+
+hostname WEST
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd #Unauthorized access is strictly prohibited#
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+logging synchronous
+
+interface G0/0/1
+ip address 172.16.1.1 255.255.255.0
+no shut
+
+!---------------------------------------------
+! Router EAST
+!---------------------------------------------
+
+en
+config t
+
+hostname EAST
+
+no ip domain-lookup
+
+service password-encryption
+
+enable secret class
+
+banner motd #Unauthorized access is strictly prohibited#
+
+line con 0
+password cisco
+login
+logging synchronous
+
+line vty 0 4
+password cisco
+login
+logging synchronous
+
+interface G0/0/1
+ip address 172.16.2.1 255.255.255.0
+no shut

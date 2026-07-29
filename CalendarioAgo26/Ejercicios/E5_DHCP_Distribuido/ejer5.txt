@@ -5,9 +5,9 @@ ISP
 ! Rutas estáticas hacia las redes de la empresa Bosch
 
 
----------------------------------------------
-ROUTER R1
----------------------------------------------
+!---------------------------------------------
+!ROUTER R1
+!---------------------------------------------
 en
 config t
 
@@ -30,6 +30,15 @@ logging synchronous
 
 banner motd # Solo acceso autorizado #
 
+! Configuración DHCP
+!---------------------------------------------
+ip dhcp excluded-address
+
+ip dhcp pool
+network 
+default-router 
+dns-server 
+
 interface G0/0
 description Enlace a Red Amarilla
 ip address 192.168.1.1 255.255.255.0
@@ -45,7 +54,6 @@ router ospf 1
 network 192.168.1.0 0.0.0.255 area 0
 network 192.168.12.0 0.0.0.3 area 0
 passive-interface g0/0
-
 
 ---------------------------------------------
 ROUTER RF
@@ -143,4 +151,3 @@ router ospf 1
 network 192.168.3.0 0.0.0.255 area 0
 network 192.168.23.0 0.0.0.3 area 0
 passive-interface g0/0
-

@@ -6,14 +6,10 @@ config t
 
 hostname R1
 
-no ip domain-lookup
-
 int s0/1/0
 ip address 198.133.219.1 255.255.255.248
 clock rate 64000
 no shut
-
-ip route 0.0.0.0 0.0.0.0 s0/1/0
 
 end
 
@@ -24,8 +20,6 @@ en
 config t
 
 hostname ISP
-
-no ip domain-lookup
 
 interface Loopback0
 ip address 10.10.10.10 255.255.255.255
@@ -47,8 +41,6 @@ en
 config t
 
 hostname R2
-
-no ip domain-lookup
 
 int s0/1/0
 ip address 198.133.219.2 255.255.255.248

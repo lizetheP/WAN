@@ -15,12 +15,12 @@ no ip domain lookup
 line con 0
 password cisco
 login
-logging sync
+logging synchronous
 
 line vty 0 4
 password cisco
 login
-logging sync
+logging synchronous
 
 enable password class
 
@@ -61,12 +61,12 @@ no ip domain lookup
 line con 0
 password cisco
 login
-logging sync
+logging synchronous
 
 line vty 0 4
 password cisco
 login
-logging sync
+logging synchronous
 
 enable password class
 
@@ -93,12 +93,12 @@ no ip domain lookup
 line con 0
 password cisco
 login
-logging sync
+logging synchronous
 
 line vty 0 4
 password cisco
 login
-logging sync
+logging synchronous
 
 enable password class
 

@@ -11,6 +11,12 @@ ip address 10.0.1.254 255.255.254.0
 ip helper-address 10.0.3.129
 no shut
 
+! Para resolver el problema de que el router A no tiene DHCP, 
+! pero alguien más si lo tiene y lo voy a poder contactar
+! por algunas de sus tres interfaces del router B.
+! Con esto el router A contacta al router B para que le entregue
+! direcciones IP dinámicas a todos los equipos de la subred.
+
 interface Serial0/1/0
 ip address 10.0.3.130 255.255.255.252
 clock rate 128000
@@ -61,6 +67,8 @@ network 10.0.4.0 255.255.252.0
 default-router 10.0.7.254
 dns-server 5.5.5.5
 
+! 1024 direcciones disponibles - 2 y una ya está ocupada por el gateway.
+
 ip route 0.0.0.0 0.0.0.0 s0/1/0
 
 router ospf 1
@@ -75,14 +83,52 @@ default-information originate
 !Traduccion dinamica uno a uno, por cada direccion IP privada 
 !se asignara una direccion IP publica.
 
+!Definir un pool de direcciones globales (públicas) que serán asignadas cuando sean necesarias.
 ip nat pool MyPool 170.15.9.33 170.15.9.63 netmask 255.255.255.224
-ip nat inside source list 10 pool MyPool
+
+!Definir una ACL estándar con las direcciones IP privadas que tienen permiso a ser traducidas
 access-list 10 permit any
+!access-list 20 permit 10.0.0.0 0.0.1.255
+!access-list 20 permit 10.0.4.0 0.0.3.255
+
+!Establecer la traducción de direcciones utilizando una lista de acceso:
+ip nat inside source list 10 pool MyPool
+
+int g0/1
+ip nat inside
+exit
+
+int s0/1/1
+ip nat inside
+exit
+
+int s0/1/0
+ip nat outside
+exit
+
+
+!PAT
+!----------------------------------------------------------------
+!Traduccion dinamica de muchas direcciones IPs privadas contra 
+!una o pocas direcciones IP públicas para salir al exterior.
+
+ip nat inside source list 10 pool MyPool overload
 
 ! Traduccion estatica
 !--------------------------------
 ip nat inside source static 10.0.1.253 170.15.9.32
 
+int g0/1
+ip nat inside
+exit
+
+int s0/1/1
+ip nat inside
+exit
+
+int s0/1/0
+ip nat outside
+exit
 
 !---------------------------------------------------------------
 !ISP
@@ -109,7 +155,9 @@ ip address 65.10.8.65 255.255.255.224
 clock rate 128000
 no shut
 
+! Entrega el direccionamiento público asignado.
 ip route 170.15.9.32 255.255.255.224 65.10.8.66
+! ip route 170.15.9.32 255.255.255.224 s0/0/0
 
 line con 0
 password cisco

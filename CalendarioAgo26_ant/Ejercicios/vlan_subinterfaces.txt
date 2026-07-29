@@ -1,0 +1,18 @@
+int g0/2.1
+ip address 195.2.8.97 255.255.255.248
+
+int g0/2.500
+ip address 195.2.8.65 255.255.255.224
+
+int g0/2.800
+ip address 195.2.8.1 255.255.255.192
+
+int vlan 1
+ip address 195.2.8.97 255.255.255.248
+no shut
+
+int vlan 500
+ip address 195.2.8.65 255.255.255.224
+
+int vlan 800
+ip address 195.2.8.1 255.255.255.192

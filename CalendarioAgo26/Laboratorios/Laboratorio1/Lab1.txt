@@ -7,8 +7,6 @@ config t
 
 hostname ISP
 
-no ip domain-lookup
-
 service password-encryption
 
 enable secret class
@@ -33,8 +31,6 @@ en
 config t
 
 hostname WEST
-
-no ip domain-lookup
 
 service password-encryption
 
@@ -64,8 +60,6 @@ en
 config t
 
 hostname EAST
-
-no ip domain-lookup
 
 service password-encryption
 

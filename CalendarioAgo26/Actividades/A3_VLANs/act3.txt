@@ -5,7 +5,7 @@ ena
 config t
 hostname S1
 
-no ip domain-lookup
+no ip domain lookup
 service password-encryption 
 
 enable secret class
@@ -20,9 +20,7 @@ logging synchronous
 line vty 0 15 
 password cisco 
 login
-exit
-
-end
+logging synchronous
 
 !--- Configuración de VLANs ---
 
@@ -34,7 +32,7 @@ ena
 config t
 hostname S2
 
-no ip domain-lookup
+no ip domain lookup
 service password-encryption 
 
 enable secret class
@@ -49,7 +47,7 @@ logging synchronous
 line vty 0 15 
 password cisco 
 login
-exit
+logging synchronous
 
 !--- Configuración de VLANs ---
 
@@ -61,7 +59,7 @@ ena
 config t
 hostname R1
 
-no ip domain-lookup
+no ip domain lookup
 service password-encryption
 
 enable secret class
@@ -76,6 +74,7 @@ logging synchronous
 line vty 0 4
 password cisco
 login
+logging synchronous
 
 int Lo0
 ip address

@@ -6,7 +6,7 @@ ena
 config t
 hostname RFrontera
 
-no ip domain-lookup
+no ip domain lookup
 service password-encryption 
 
 enable secret class
@@ -21,7 +21,7 @@ logging synchronous
 line vty 0 4 
 password cisco 
 login
-exit
+logging synchronous
 
 int s0/0/1
 desc Interfaz que conecta con ISP

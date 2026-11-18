@@ -167,13 +167,8 @@ ip address 10.0.3.129 255.255.255.252
 no shut
 exit
 
-router ospf 1
-passive-interface GigabitEthernet0/1
-passive-interface Serial0/1/0
-network 10.0.3.128 0.0.0.3 area 0
-network 10.0.4.0 0.0.3.255 area 0
-default-information originate
-exit
+! Configuración de OSPF
+
 
 ! Configuración de DHCP centralizado
 
